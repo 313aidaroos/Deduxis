@@ -44,14 +44,24 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="p-6 border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Deduxis</h1>
-          <a href="/" className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-900 transition">
-            Home
-          </a>
+      <nav className="sticky top-0 z-50 bg-white/95 dark:bg-black/95 border-b border-gray-200 dark:border-gray-800 backdrop-blur">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <a href="/" className="text-xl font-bold">Deduxis</a>
+            <div className="hidden md:flex items-center gap-6 text-sm">
+              <a href="/#what-we-do" className="hover:text-gray-600 dark:hover:text-gray-400 transition">What we do</a>
+              <a href="/#how-it-works" className="hover:text-gray-600 dark:hover:text-gray-400 transition">How it works</a>
+              <a href="/#vision" className="hover:text-gray-600 dark:hover:text-gray-400 transition">Our vision</a>
+              <a href="/#faq" className="hover:text-gray-600 dark:hover:text-gray-400 transition">FAQs</a>
+              <a href="/pricing" className="hover:text-gray-600 dark:hover:text-gray-400 transition">Pricing</a>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <a href="/chat" className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-900 transition">Ask Cixy</a>
+            <a href="/login" className="px-4 py-2 text-sm bg-black dark:bg-white text-white dark:text-black rounded hover:opacity-90 transition">Get Started</a>
+          </div>
         </div>
-      </header>
+      </nav>
 
       <main className="flex-1 flex flex-col items-center justify-center p-6">
         <div className="max-w-2xl text-center space-y-8">
