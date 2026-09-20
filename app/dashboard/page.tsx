@@ -22,6 +22,8 @@ export default function Dashboard() {
   const [extracting, setExtracting] = useState(false);
   const [extracted, setExtracted] = useState<ExtractedData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -66,6 +68,70 @@ export default function Dashboard() {
       setError(err.message || "An error occurred during extraction");
     } finally {
       setExtracting(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!extracted || !preview) return;
+
+    setSaving(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/receipts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          merchant: extracted.merchant,
+          date: extracted.date,
+          total: extracted.total,
+          tax: extracted.tax,
+          payment_method: extracted.payment_method,
+          line_items: extracted.line_items,
+          category: extracted.category,
+          image_data: preview,
+          extracted_data: extracted,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save receipt");
+      }
+
+      // Reset form after successful save
+      setFile(null);
+      setPreview(null);
+      setExtracted(null);
+      alert("Receipt saved successfully!");
+    } catch (err: any) {
+      setError(err.message || "An error occurred while saving");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleExport = async (format: string = "csv") => {
+    setExporting(true);
+    try {
+      const response = await fetch(`/api/export?format=${format}`);
+      
+      if (!response.ok) {
+        throw new Error("Failed to export receipts");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `deduxis-${format}-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err: any) {
+      setError(err.message || "An error occurred during export");
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -230,11 +296,19 @@ export default function Dashboard() {
               )}
 
               <div className="flex gap-4 pt-4">
-                <button className="flex-1 px-8 py-3 bg-black dark:bg-white text-white dark:text-black rounded hover:opacity-90 transition">
-                  Save Receipt
+                <button 
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="flex-1 px-8 py-3 bg-black dark:bg-white text-white dark:text-black rounded hover:opacity-90 transition disabled:opacity-50"
+                >
+                  {saving ? "Saving..." : "Save Receipt"}
                 </button>
-                <button className="flex-1 px-8 py-3 border border-gray-300 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-900 transition">
-                  Export CSV
+                <button 
+                  onClick={() => handleExport("csv")}
+                  disabled={exporting}
+                  className="flex-1 px-8 py-3 border border-gray-300 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-900 transition disabled:opacity-50"
+                >
+                  {exporting ? "Exporting..." : "Export CSV"}
                 </button>
               </div>
             </div>

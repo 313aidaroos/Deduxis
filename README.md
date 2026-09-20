@@ -5,7 +5,7 @@ Capture receipts, extract line items, categorize deductions, export for tax time
 ## Stack
 
 - Next.js 15 + TypeScript + Tailwind
-- Supabase (auth + storage)
+- Supabase (auth + storage + database)
 - Anthropic Claude (Cixy chat + receipt extraction)
 - Special Elite font (Apixis family standard)
 
@@ -18,13 +18,20 @@ cd Deduxis
 npm install
 ```
 
-2. Set up environment:
+2. Set up Supabase:
+   - Create a project at https://supabase.com
+   - Run `supabase/schema.sql` in the SQL Editor
+   - Create a storage bucket named `receipts` with private access + RLS enabled
+
+3. Set up environment:
 ```bash
 cp .env.local.example .env.local
-# Edit .env.local with your Supabase and Anthropic credentials
+# Edit .env.local with your credentials:
+# - NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY from Supabase
+# - ANTHROPIC_API_KEY from https://console.anthropic.com
 ```
 
-3. Run dev server:
+4. Run dev server:
 ```bash
 npm run dev
 ```
@@ -39,11 +46,16 @@ Visit http://localhost:3000
 
 ## Features
 
-- Magic link authentication (Supabase)
-- Cixy chat: expense/deduction expert (Muslim identity, "not a CPA" disclaimers)
-- Receipt upload and vision extraction (coming soon)
-- Category recommendations (US Schedule C business categories)
-- CSV + QuickBooks exports (coming soon)
+- ✅ Magic link authentication (Supabase)
+- ✅ Cixy chat: expense/deduction expert (Muslim identity, "not a CPA" disclaimers)
+- ✅ Receipt upload and vision extraction (Anthropic Claude)
+- ✅ Structured data: merchant, date, total, tax, line items, payment method (last 4 only)
+- ✅ Schedule C business category suggestions
+- ✅ Receipt storage (Supabase Storage + RLS, private + PII-safe)
+- ✅ CSV export (standard + QuickBooks-compatible)
+- 🚧 Category overrides and merchant memory
+- 🚧 Apixis Wallet integration (waiting on docs)
+- 🚧 Mileage tracking and per-diem logs
 
 ## Family
 
