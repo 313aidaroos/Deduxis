@@ -53,8 +53,8 @@ Visit http://localhost:3000
 - ✅ Schedule C business category suggestions
 - ✅ Receipt storage (Supabase Storage + RLS, private + PII-safe)
 - ✅ CSV export (standard + QuickBooks-compatible)
-- 🚧 Category overrides and merchant memory
-- 🚧 Apixis Wallet integration (waiting on docs)
+- ✅ Apixis Wallet integration (redeem seat with Ixis, 402 handling)
+- 🚧 Category overrides and merchant memory (DB table exists, UI not wired)
 - 🚧 Mileage tracking and per-diem logs
 
 ## Family
