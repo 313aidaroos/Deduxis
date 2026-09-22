@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { quoteProduct, createReservation } from "@/lib/wallet";
 
 export default function Pricing() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [buyUrl, setBuyUrl] = useState<string | null>(null);
 
-  const PRODUCT_KEY = "deduxis.receipts.monthly";
   const IXIS_PRICE = 15000;
   const USD_PRICE = 150;
 
@@ -16,25 +15,30 @@ export default function Pricing() {
     setLoading(true);
     setError(null);
     setMessage(null);
+    setBuyUrl(null);
+
+    const idempotencyKey = `deduxis-redeem-${Date.now()}`;
 
     try {
-      // Step 1: Get quote
-      setMessage("Getting quote from Wallet...");
-      const quote = await quoteProduct(PRODUCT_KEY);
+      const response = await fetch("/api/redeem", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idempotencyKey }),
+      });
 
-      // Step 2: Create reservation (idempotencyKey = deduxis-userId-timestamp)
-      const idempotencyKey = `deduxis-${Date.now()}`;
-      setMessage("Reserving Ixis...");
-      const reservation = await createReservation(PRODUCT_KEY, idempotencyKey, quote.quoteId);
+      const data = await response.json();
 
-      setMessage(`Reserved! Reservation ID: ${reservation.reservationId}. Provisioning...`);
+      if (response.status === 402) {
+        setError(`You need ${data.needed.toLocaleString()} Ixis to redeem this seat.`);
+        setBuyUrl(data.buyUrl);
+        return;
+      }
 
-      // Step 3: In real flow, provision the entitlement here
-      // For now, we show success state
-      setMessage(`Success! ${IXIS_PRICE} Ixis reserved. In production this would unlock your seat.`);
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to redeem");
+      }
 
-      // TODO: Call captureReservation(reservation.reservationId) after successful provisioning
-      // TODO: Call releaseReservation on failure
+      setMessage(`Success! Receipt ID: ${data.receiptId}. Your seat is now active.`);
     } catch (err: any) {
       setError(err.message || "An error occurred during redemption");
     } finally {
@@ -65,24 +69,25 @@ export default function Pricing() {
 
       <main className="flex-1 flex flex-col items-center justify-center p-6">
         <div className="max-w-2xl text-center space-y-8">
-          <h2 className="text-4xl font-bold">Receipt Intelligence Seat</h2>
+          <div>
+            <div className="text-sm uppercase tracking-[3px] text-gray-500 mb-3">Receipt Intelligence</div>
+            <h1 className="text-5xl font-bold">Monthly Seat</h1>
+          </div>
           
           <div className="text-6xl font-bold">
             {IXIS_PRICE.toLocaleString()} Ixis
             <span className="text-3xl text-gray-500 ml-2">· ${USD_PRICE}</span>
           </div>
           
-          <p className="text-xl text-gray-600 dark:text-gray-400">
-            per month · includes 200 receipts
-          </p>
+          <p className="text-xl text-gray-600 dark:text-gray-400">per month · includes 200 receipts</p>
 
-          <div className="pt-8">
+          <div className="pt-4">
             <button
               onClick={handleRedeem}
               disabled={loading}
-              className="px-12 py-4 bg-black dark:bg-white text-white dark:text-black rounded text-xl hover:opacity-90 transition disabled:opacity-50"
+              className="px-12 py-4 bg-black dark:bg-white text-white dark:text-black rounded-lg text-xl hover:opacity-90 transition disabled:opacity-50"
             >
-              {loading ? "Connecting to Wallet..." : `Redeem · ${IXIS_PRICE.toLocaleString()} Ixis`}
+              {loading ? "Processing..." : `Redeem · ${IXIS_PRICE.toLocaleString()} Ixis`}
             </button>
           </div>
 
@@ -93,16 +98,28 @@ export default function Pricing() {
           )}
 
           {error && (
-            <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 rounded">
-              {error}
+            <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 rounded space-y-3">
+              <p>{error}</p>
+              {buyUrl && (
+                <a
+                  href={buyUrl}
+                  className="inline-block px-6 py-2 bg-red-800 dark:bg-red-200 text-white dark:text-red-900 rounded hover:opacity-90 transition"
+                >
+                  Buy Ixis
+                </a>
+              )}
             </div>
           )}
 
           <p className="text-sm text-gray-500 pt-4">
-            Extra receipts metered via Apixis Wallet. No Stripe Checkout — Ixis only.
+            Extra receipts metered via Apixis Wallet. No card charges — Ixis only.
           </p>
         </div>
       </main>
+
+      <footer className="border-t border-gray-200 dark:border-gray-800 py-8 px-6 text-center text-sm text-gray-500">
+        <p>Part of the Apixis family · Powered by Ixis</p>
+      </footer>
     </div>
   );
 }

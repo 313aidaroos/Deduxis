@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { hasEntitlement } from '@/lib/apixis-wallet';
 
 export async function POST(req: NextRequest) {
   try {
@@ -7,8 +8,14 @@ export async function POST(req: NextRequest) {
     
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
-    if (authError || !user) {
+    if (authError || !user || !user.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Check entitlement
+    const hasAccess = await hasEntitlement(user.email, 'Deduxis', 'deduxis.receipts.monthly');
+    if (!hasAccess) {
+      return NextResponse.json({ error: 'No active seat. Redeem a seat at /pricing' }, { status: 403 });
     }
 
     const { 
@@ -95,7 +102,7 @@ export async function GET(req: NextRequest) {
     
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
-    if (authError || !user) {
+    if (authError || !user || !user.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
