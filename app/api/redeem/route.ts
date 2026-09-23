@@ -22,9 +22,13 @@ export async function POST(req: NextRequest) {
       productKey: 'deduxis.receipts.monthly',
       idempotencyKey,
       provision: async (reservation) => {
-        // TODO: Create subscription/entitlement record in Deduxis DB
-        // For now, the Wallet entitlement is the source of truth
+        // Deduxis does not write local entitlements; Wallet is source of truth
+        // If we ever write a local subscription row, do it here
         return { reservationId: reservation.reservationId };
+      },
+      unprovision: async (reservation, result) => {
+        // No local entitlement to roll back (Wallet-only)
+        // If we ever write a subscription row in provision, delete it here
       },
     });
 

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export default function Pricing() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [buyUrl, setBuyUrl] = useState<string | null>(null);
+  const attemptIdRef = useRef<string | null>(null);
 
   const IXIS_PRICE = 15000;
   const USD_PRICE = 150;
@@ -17,7 +18,11 @@ export default function Pricing() {
     setMessage(null);
     setBuyUrl(null);
 
-    const idempotencyKey = `deduxis-redeem-${Date.now()}`;
+    // Generate attempt ID once per click; retries reuse it
+    if (!attemptIdRef.current) {
+      attemptIdRef.current = `deduxis-${crypto.randomUUID().slice(0, 8)}`;
+    }
+    const idempotencyKey = attemptIdRef.current;
 
     try {
       const response = await fetch("/api/redeem", {
@@ -39,6 +44,7 @@ export default function Pricing() {
       }
 
       setMessage(`Success! Receipt ID: ${data.receiptId}. Your seat is now active.`);
+      attemptIdRef.current = null; // Reset for next purchase
     } catch (err: any) {
       setError(err.message || "An error occurred during redemption");
     } finally {

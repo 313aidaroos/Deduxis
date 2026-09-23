@@ -112,7 +112,12 @@ export async function entitlements(ownerEmail: string, app: string): Promise<Ent
 
 export async function hasEntitlement(ownerEmail: string, app: string, productKey: string): Promise<boolean> {
   const list = await entitlements(ownerEmail, app);
-  return list.some((e) => e.product_key === productKey && e.status === "active");
+  return list.some((e) => {
+    if (e.product_key !== productKey || e.status !== "active") return false;
+    // Enforce expiry: monthly products have renews_at; if present and past, no access
+    if (e.renews_at && new Date(e.renews_at) < new Date()) return false;
+    return true;
+  });
 }
 
 /**
@@ -129,6 +134,12 @@ export async function redeem<T>(opts: {
   productKey: string;
   idempotencyKey: string;
   provision: (reservation: Reservation) => Promise<T>;
+  /**
+   * Undo what provision() did. Called when capture FAILS after provision succeeded, before the
+   * hold is released — so a customer is never left with access they were not charged for.
+   * Optional for backward compatibility; every site that writes access in provision() should pass it.
+   */
+  unprovision?: (reservation: Reservation, result: T) => Promise<void>;
 }): Promise<{ ok: true; receiptId: string; result: T } | { ok: false; insufficient: true; needed: number; message: string }> {
   let held: Reservation;
   try {
@@ -140,11 +151,17 @@ export async function redeem<T>(opts: {
     }
     throw e;
   }
+  let provisioned: { result: T } | null = null;
   try {
     const result = await opts.provision(held);
+    provisioned = { result };
     const cap = await capture(held.reservationId);
     return { ok: true, receiptId: cap.receiptId, result };
   } catch (e) {
+    if (provisioned && opts.unprovision) {
+      // Capture failed after access was written: take the access back first, then release.
+      await opts.unprovision(held, provisioned.result).catch((u) => console.error("wallet unprovision failed", u));
+    }
     await release(held.reservationId).catch(() => { /* already settled or wallet down; ledger stays consistent */ });
     throw e;
   }
