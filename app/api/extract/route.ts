@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { guard } from '@/lib/guard';
 
 const EXTRACTION_SYSTEM = `You are a receipt data extraction assistant. Extract structured data from receipt images.
 
@@ -24,6 +25,9 @@ Rules:
 - Return valid JSON only`;
 
 export async function POST(req: NextRequest) {
+  // Extraction is the paid Receipt Intelligence feature: seat holders only.
+  const access = await guard({ seat: true, route: 'extract', max: 60 });
+  if (!access.ok) return access.response;
   try {
     const apiKey = process.env.ANTHROPIC_API_KEY;
     
@@ -83,10 +87,10 @@ export async function POST(req: NextRequest) {
     const extracted = JSON.parse(textContent.text.trim());
 
     return NextResponse.json(extracted);
-  } catch (error: any) {
+  } catch (error) {
     console.error('Extract API error:', error);
     return NextResponse.json(
-      { error: error.message || 'An error occurred during extraction' },
+      { error: (error instanceof Error ? error.message : String(error)) || 'An error occurred during extraction' },
       { status: 500 }
     );
   }

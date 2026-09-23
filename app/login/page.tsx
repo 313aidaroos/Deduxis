@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -121,7 +122,7 @@ function LoginInner() {
         )}
 
         <div className="text-center">
-          <a href="/" className="text-sm text-gray-600 dark:text-gray-400 hover:underline">← Back to home</a>
+          <Link href="/" className="text-sm text-gray-600 dark:text-gray-400 hover:underline">← Back to home</Link>
         </div>
       </div>
     </div>

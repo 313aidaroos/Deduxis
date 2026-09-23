@@ -1,22 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { hasEntitlement } from '@/lib/apixis-wallet';
+import { guard } from '@/lib/guard';
 
 export async function POST(req: NextRequest) {
   try {
+    const access = await guard({ seat: true, route: 'receipts', max: 200 });
+    if (!access.ok) return access.response;
+    const user = access.user;
     const supabase = await createServerSupabaseClient();
-    
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    if (authError || !user || !user.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // Check entitlement
-    const hasAccess = await hasEntitlement(user.email, 'Deduxis', 'deduxis.receipts.monthly');
-    if (!hasAccess) {
-      return NextResponse.json({ error: 'No active seat. Redeem a seat at /pricing' }, { status: 403 });
-    }
 
     const { 
       merchant, 
@@ -87,10 +78,10 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, receipt });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Save receipt error:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to save receipt' },
+      { error: (error instanceof Error ? error.message : String(error)) || 'Failed to save receipt' },
       { status: 500 }
     );
   }
@@ -115,10 +106,10 @@ export async function GET(req: NextRequest) {
     if (error) throw error;
 
     return NextResponse.json({ receipts });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Fetch receipts error:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to fetch receipts' },
+      { error: (error instanceof Error ? error.message : String(error)) || 'Failed to fetch receipts' },
       { status: 500 }
     );
   }

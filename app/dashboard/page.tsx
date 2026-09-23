@@ -59,13 +59,14 @@ export default function Dashboard() {
         if (response.status === 503) {
           throw new Error("Receipt extraction is not available right now. Please check back later.");
         }
-        throw new Error("Failed to extract receipt data");
+        const body = await response.json().catch(() => ({}));
+        throw new Error(body.error || "Failed to extract receipt data");
       }
 
       const data = await response.json();
       setExtracted(data);
-    } catch (err: any) {
-      setError(err.message || "An error occurred during extraction");
+    } catch (err) {
+      setError((err instanceof Error ? err.message : String(err)) || "An error occurred during extraction");
     } finally {
       setExtracting(false);
     }
@@ -103,8 +104,8 @@ export default function Dashboard() {
       setPreview(null);
       setExtracted(null);
       alert("Receipt saved successfully!");
-    } catch (err: any) {
-      setError(err.message || "An error occurred while saving");
+    } catch (err) {
+      setError((err instanceof Error ? err.message : String(err)) || "An error occurred while saving");
     } finally {
       setSaving(false);
     }
@@ -128,8 +129,8 @@ export default function Dashboard() {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-    } catch (err: any) {
-      setError(err.message || "An error occurred during export");
+    } catch (err) {
+      setError((err instanceof Error ? err.message : String(err)) || "An error occurred during export");
     } finally {
       setExporting(false);
     }
