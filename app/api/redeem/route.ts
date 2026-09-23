@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redeem, buyIxisUrl, WalletError } from '@/lib/apixis-wallet';
+import { apixisOwner } from "@/lib/apixis-login";
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,7 +20,7 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await redeem({
-      ownerEmail: user.email,
+      owner: (await apixisOwner(user.email)) ?? user.email,
       productKey: 'deduxis.receipts.monthly',
       idempotencyKey,
       provision: async (reservation) => {

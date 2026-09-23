@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { ApixisWalletChip } from "@/components/ApixisWalletChip";
 
 export default function Pricing() {
   const [loading, setLoading] = useState(false);
@@ -84,6 +85,7 @@ export default function Pricing() {
           <div>
             <div className="text-sm uppercase tracking-[3px] text-gray-500 mb-3">Receipt Intelligence</div>
             <h1 className="text-5xl font-bold">Monthly Seat</h1>
+            <p>Your Apixis Wallet: <ApixisWalletChip /></p>
           </div>
           
           <div className="text-6xl font-bold">
