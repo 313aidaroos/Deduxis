@@ -8,7 +8,8 @@ export async function POST(req: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user || !user.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      // Return 401 so client can redirect to /login?next=/pricing
+      return NextResponse.json({ error: 'Unauthorized', redirect: '/login?next=/pricing' }, { status: 401 });
     }
 
     const { idempotencyKey } = await req.json();

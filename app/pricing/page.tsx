@@ -33,6 +33,12 @@ export default function Pricing() {
 
       const data = await response.json();
 
+      if (response.status === 401 && data.redirect) {
+        // Not signed in — redirect to login with next parameter
+        window.location.href = data.redirect;
+        return;
+      }
+
       if (response.status === 402) {
         setError(`You need ${data.needed.toLocaleString()} Ixis to redeem this seat.`);
         setBuyUrl(data.buyUrl);
