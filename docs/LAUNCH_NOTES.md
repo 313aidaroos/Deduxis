@@ -28,9 +28,12 @@ None pending.
 
 ## What changed, file by file
 
+Each changed backend code file also starts with a one-line `Change note (Claude, Sep 2026)` comment saying the same thing.
+
 | File | Change |
 |---|---|
 | `.env.example` | Added 7 key(s) the code reads that were missing: `ANTHROPIC_API_KEY`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `WALLET_API_KEY`, `APIXIS_WALLET_API_URL`, `NEXT_PUBLIC_APP_URL`, `APIXIS_WALLET_API_KEY`. |
+| `.gitignore` | `<a>` → `Link` (lint). No visual change. |
 | `app/api/chat/route.ts` | Sign-in required, rate limited. |
 | `app/api/export/route.ts` | CSV: neutralizes spreadsheet formulas; no crash on numeric strings. |
 | `app/api/extract/route.ts` | Paid AI extraction now needs a seat and is rate limited (was open). |

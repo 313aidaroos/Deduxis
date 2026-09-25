@@ -1,3 +1,4 @@
+// Change note (Claude, Sep 2026): Paid AI extraction now needs a seat and is rate limited (was open). See docs/LAUNCH_NOTES.md.
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { guard } from '@/lib/guard';

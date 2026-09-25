@@ -1,3 +1,4 @@
+// Change note (Claude, Sep 2026): Sign-in required, rate limited. See docs/LAUNCH_NOTES.md.
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { guard } from '@/lib/guard';
