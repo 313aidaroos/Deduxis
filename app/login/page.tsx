@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { magicLink, passwordSignIn } from "./actions";
+import { SignInWithApixis } from "@/components/SignInWithApixis";
 
 function LoginInner() {
   const params = useSearchParams();
@@ -37,6 +38,7 @@ function LoginInner() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-2">Sign in to Deduxis</h1>
+          <SignInWithApixis />
           <p className="text-gray-600 dark:text-gray-400">
             Receipt intelligence for your business
           </p>
