@@ -1,3 +1,4 @@
+import Link from "next/link";
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
@@ -5,18 +6,18 @@ export default function Home() {
       <nav className="sticky top-0 z-50 bg-white/95 dark:bg-black/95 border-b border-gray-200 dark:border-gray-800 backdrop-blur">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <a href="/" className="text-xl font-bold">Deduxis</a>
+            <Link href="/" className="text-xl font-bold">Deduxis</Link>
             <div className="hidden md:flex items-center gap-6 text-sm">
               <a href="#what-we-do" className="hover:text-gray-600 dark:hover:text-gray-400 transition">What we do</a>
               <a href="#how-it-works" className="hover:text-gray-600 dark:hover:text-gray-400 transition">How it works</a>
               <a href="#vision" className="hover:text-gray-600 dark:hover:text-gray-400 transition">Our vision</a>
               <a href="#faq" className="hover:text-gray-600 dark:hover:text-gray-400 transition">FAQs</a>
-              <a href="/pricing" className="hover:text-gray-600 dark:hover:text-gray-400 transition">Pricing</a>
+              <Link href="/pricing" className="hover:text-gray-600 dark:hover:text-gray-400 transition">Pricing</Link>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <a href="/chat" className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-900 transition">Ask Cixy</a>
-            <a href="/login" className="px-4 py-2 text-sm bg-black dark:bg-white text-white dark:text-black rounded hover:opacity-90 transition">Get Started</a>
+            <Link href="/chat" className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-900 transition">Ask Cixy</Link>
+            <Link href="/login" className="px-4 py-2 text-sm bg-black dark:bg-white text-white dark:text-black rounded hover:opacity-90 transition">Get Started</Link>
           </div>
         </div>
       </nav>
@@ -31,9 +32,9 @@ export default function Home() {
             Capture. Extract. Categorize. Export.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/login" className="px-8 py-4 bg-black dark:bg-white text-white dark:text-black rounded-lg text-lg hover:opacity-90 transition">
+            <Link href="/login" className="px-8 py-4 bg-black dark:bg-white text-white dark:text-black rounded-lg text-lg hover:opacity-90 transition">
               Start free trial
-            </a>
+            </Link>
             <a href="#how-it-works" className="px-8 py-4 border border-gray-300 dark:border-gray-700 rounded-lg text-lg hover:bg-gray-100 dark:hover:bg-gray-900 transition">
               See how it works
             </a>
@@ -141,9 +142,9 @@ export default function Home() {
       {/* Final CTA */}
       <section className="border-t border-gray-200 dark:border-gray-800 py-16 px-6 text-center">
         <h2 className="text-3xl font-bold mb-4">Ready to clean up your receipts?</h2>
-        <a href="/login" className="inline-block px-8 py-4 bg-black dark:bg-white text-white dark:text-black rounded-lg text-lg hover:opacity-90 transition">
+        <Link href="/login" className="inline-block px-8 py-4 bg-black dark:bg-white text-white dark:text-black rounded-lg text-lg hover:opacity-90 transition">
           Get started with Deduxis
-        </a>
+        </Link>
       </section>
 
       <footer className="border-t border-gray-200 dark:border-gray-800 py-8 px-6 text-center text-sm text-gray-500">

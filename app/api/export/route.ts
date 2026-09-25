@@ -43,23 +43,39 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({ error: 'Invalid format' }, { status: 400 });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Export error:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to export receipts' },
+      { error: (error instanceof Error ? error.message : String(error)) || 'Failed to export receipts' },
       { status: 500 }
     );
   }
 }
 
-function generateCSV(receipts: any[]): string {
+type Receipt = {
+  receipt_date: string;
+  merchant: string;
+  category: string;
+  total_amount: number | string;
+  tax_amount: number | string | null;
+  payment_method: string | null;
+  notes: string | null;
+};
+
+// Postgres numeric can arrive as a string.
+function money(value: number | string | null): string {
+  const n = Number(value);
+  return Number.isFinite(n) ? n.toFixed(2) : '';
+}
+
+function generateCSV(receipts: Receipt[]): string {
   const headers = ['Date', 'Merchant', 'Category', 'Total', 'Tax', 'Payment Method', 'Notes'];
   const rows = receipts.map(r => [
     r.receipt_date,
     escapeCsv(r.merchant),
     escapeCsv(r.category),
-    `$${r.total_amount.toFixed(2)}`,
-    r.tax_amount ? `$${r.tax_amount.toFixed(2)}` : '',
+    `$${money(r.total_amount)}`,
+    r.tax_amount ? `$${money(r.tax_amount)}` : '',
     escapeCsv(r.payment_method || ''),
     escapeCsv(r.notes || ''),
   ]);
@@ -67,14 +83,14 @@ function generateCSV(receipts: any[]): string {
   return [headers, ...rows].map(row => row.join(',')).join('\n');
 }
 
-function generateQuickBooksCSV(receipts: any[]): string {
+function generateQuickBooksCSV(receipts: Receipt[]): string {
   // QuickBooks IIF format approximation (simplified CSV)
   const headers = ['Date', 'Vendor', 'Account', 'Amount', 'Memo'];
   const rows = receipts.map(r => [
     r.receipt_date,
     escapeCsv(r.merchant),
     escapeCsv(r.category),
-    r.total_amount.toFixed(2),
+    money(r.total_amount),
     escapeCsv(`${r.category} - ${r.merchant}${r.notes ? ' - ' + r.notes : ''}`),
   ]);
 
@@ -83,7 +99,9 @@ function generateQuickBooksCSV(receipts: any[]): string {
 
 function escapeCsv(value: string): string {
   if (!value) return '';
-  const escaped = value.replace(/"/g, '""');
+  // Neutralize spreadsheet formulas (=, +, -, @) from receipt text.
+  const safe = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
+  const escaped = safe.replace(/"/g, '""');
   return escaped.includes(',') || escaped.includes('"') || escaped.includes('\n')
     ? `"${escaped}"`
     : escaped;

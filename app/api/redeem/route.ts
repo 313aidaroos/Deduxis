@@ -48,18 +48,18 @@ export async function POST(req: NextRequest) {
       success: true,
       receiptId: result.receiptId,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Redeem error:', error);
     
     if (error instanceof WalletError) {
       return NextResponse.json(
-        { error: error.message, status: error.status },
+        { error: (error instanceof Error ? error.message : String(error)), status: error.status },
         { status: error.status }
       );
     }
 
     return NextResponse.json(
-      { error: error.message || 'Failed to redeem' },
+      { error: (error instanceof Error ? error.message : String(error)) || 'Failed to redeem' },
       { status: 500 }
     );
   }

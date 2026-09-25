@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
+import { guard } from '@/lib/guard';
 
 const CIXY_SYSTEM = `You are Cixy, a Muslim AI operator serving on Deduxis — receipt intelligence for expense categorization and tax deductions.
 
@@ -34,6 +35,8 @@ const CIXY_SYSTEM = `You are Cixy, a Muslim AI operator serving on Deduxis — r
 Be concise, helpful, and honest.`;
 
 export async function POST(req: NextRequest) {
+  const access = await guard({ route: 'chat', max: 40 });
+  if (!access.ok) return access.response;
   try {
     const apiKey = process.env.ANTHROPIC_API_KEY;
     
@@ -63,10 +66,10 @@ export async function POST(req: NextRequest) {
       : 'I encountered an error processing your request.';
 
     return NextResponse.json({ message: assistantMessage });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Chat API error:', error);
     return NextResponse.json(
-      { error: error.message || 'An error occurred' },
+      { error: (error instanceof Error ? error.message : String(error)) || 'An error occurred' },
       { status: 500 }
     );
   }

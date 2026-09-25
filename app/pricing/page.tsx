@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useState, useRef } from "react";
 
@@ -51,8 +52,8 @@ export default function Pricing() {
 
       setMessage(`Success! Receipt ID: ${data.receiptId}. Your seat is now active.`);
       attemptIdRef.current = null; // Reset for next purchase
-    } catch (err: any) {
-      setError(err.message || "An error occurred during redemption");
+    } catch (err) {
+      setError((err instanceof Error ? err.message : String(err)) || "An error occurred during redemption");
     } finally {
       setLoading(false);
     }
@@ -63,18 +64,18 @@ export default function Pricing() {
       <nav className="sticky top-0 z-50 bg-white/95 dark:bg-black/95 border-b border-gray-200 dark:border-gray-800 backdrop-blur">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <a href="/" className="text-xl font-bold">Deduxis</a>
+            <Link href="/" className="text-xl font-bold">Deduxis</Link>
             <div className="hidden md:flex items-center gap-6 text-sm">
-              <a href="/#what-we-do" className="hover:text-gray-600 dark:hover:text-gray-400 transition">What we do</a>
-              <a href="/#how-it-works" className="hover:text-gray-600 dark:hover:text-gray-400 transition">How it works</a>
-              <a href="/#vision" className="hover:text-gray-600 dark:hover:text-gray-400 transition">Our vision</a>
-              <a href="/#faq" className="hover:text-gray-600 dark:hover:text-gray-400 transition">FAQs</a>
-              <a href="/pricing" className="hover:text-gray-600 dark:hover:text-gray-400 transition">Pricing</a>
+              <Link href="/#what-we-do" className="hover:text-gray-600 dark:hover:text-gray-400 transition">What we do</Link>
+              <Link href="/#how-it-works" className="hover:text-gray-600 dark:hover:text-gray-400 transition">How it works</Link>
+              <Link href="/#vision" className="hover:text-gray-600 dark:hover:text-gray-400 transition">Our vision</Link>
+              <Link href="/#faq" className="hover:text-gray-600 dark:hover:text-gray-400 transition">FAQs</Link>
+              <Link href="/pricing" className="hover:text-gray-600 dark:hover:text-gray-400 transition">Pricing</Link>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <a href="/chat" className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-900 transition">Ask Cixy</a>
-            <a href="/login" className="px-4 py-2 text-sm bg-black dark:bg-white text-white dark:text-black rounded hover:opacity-90 transition">Get Started</a>
+            <Link href="/chat" className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-900 transition">Ask Cixy</Link>
+            <Link href="/login" className="px-4 py-2 text-sm bg-black dark:bg-white text-white dark:text-black rounded hover:opacity-90 transition">Get Started</Link>
           </div>
         </div>
       </nav>

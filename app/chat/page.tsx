@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import { useState, useRef, useEffect } from "react";
 
@@ -53,12 +54,12 @@ export default function Chat() {
 
       const data = await response.json();
       setMessages((prev) => [...prev, { role: "assistant", content: data.message }]);
-    } catch (error: any) {
+    } catch (error) {
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: error.message || "Sorry, I encountered an error. Please try again.",
+          content: (error instanceof Error ? error.message : String(error)) || "Sorry, I encountered an error. Please try again.",
         },
       ]);
     } finally {
@@ -71,12 +72,11 @@ export default function Chat() {
       <header className="p-6 border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold">Chat with Cixy</h1>
-          <a
-            href="/"
+          <Link href="/"
             className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-900 transition"
           >
             Home
-          </a>
+          </Link>
         </div>
       </header>
 
