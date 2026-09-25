@@ -1,0 +1,47 @@
+# Deduxis: launch notes
+
+_Updated 2026-09-25. One notes file per repo: what was changed, file by file, and everything you need to connect. The full family report: https://claude.ai/artifact/QERxA6PMsFK1vdR51Ex2NQ_
+
+## Status
+
+Ready for testers after keys. Before paid launch: enforce the 200-receipt cap.
+
+## Connect (in order)
+
+1. **Apixis Wallet key.** In the ApixisWallet repo run `npm run family-keys` once. It prints one SQL block (paste it in the Wallet's Supabase SQL editor) and one env block per site. Paste this site's block: `WALLET_API_KEY`, `APIXIS_CLIENT_ID`, `APIXIS_WALLET_API_URL`.
+2. Supabase: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+3. AI: `ANTHROPIC_API_KEY` (receipt extraction).
+
+Every key this repo reads is listed in `.env.example` (required, optional, and legacy names to leave unset).
+
+## Apixis Wallet
+
+App `deduxis`. Sells `deduxis.receipts.monthly`.
+
+## Database
+
+None pending.
+
+## Open items
+
+- The plan says 200 receipts; nothing enforces it yet.
+
+## What changed, file by file
+
+| File | Change |
+|---|---|
+| `.env.example` | Added 7 key(s) the code reads that were missing: `ANTHROPIC_API_KEY`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `WALLET_API_KEY`, `APIXIS_WALLET_API_URL`, `NEXT_PUBLIC_APP_URL`, `APIXIS_WALLET_API_KEY`. |
+| `app/api/chat/route.ts` | Sign-in required, rate limited. |
+| `app/api/export/route.ts` | CSV: neutralizes spreadsheet formulas; no crash on numeric strings. |
+| `app/api/extract/route.ts` | Paid AI extraction now needs a seat and is rate limited (was open). |
+| `app/api/receipts/route.ts` | Sign-in required, rate limited. |
+| `app/api/redeem/route.ts` | Typed; no behavior change. |
+| `app/chat/page.tsx` | `<a>` → `Link` (lint). No visual change. |
+| `app/dashboard/page.tsx` | `<a>` → `Link` (lint). No visual change. |
+| `app/login/page.tsx` | `<a>` → `Link` (lint). No visual change. |
+| `app/page.tsx` | `<a>` → `Link` (lint). No visual change. |
+| `app/pricing/page.tsx` | `<a>` → `Link` (lint). No visual change. |
+| `docs/LAUNCH_NOTES.md` | This file. |
+| `lib/guard.ts` | New. `guard({seat, route, max})`: sign-in, seat check and rate limit in one call. |
+
+_Changes are backend and plumbing only. Pages, design and UI are not changed except where noted as a build or lint fix with no visual change._
