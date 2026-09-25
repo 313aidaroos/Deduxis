@@ -1,3 +1,4 @@
+// Change note (Claude, Sep 2026): CSV: neutralizes spreadsheet formulas; no crash on numeric strings. See docs/LAUNCH_NOTES.md.
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 

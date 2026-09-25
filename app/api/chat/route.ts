@@ -1,3 +1,4 @@
+// Change note (Claude, Sep 2026): Sign-in required, rate limited. See docs/LAUNCH_NOTES.md.
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { guard } from '@/lib/guard';

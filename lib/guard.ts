@@ -1,3 +1,4 @@
+// Change note (Claude, Sep 2026): New. `guard({seat, route, max})`: sign-in, seat check and rate limit in one call. See docs/LAUNCH_NOTES.md.
 import { NextResponse } from "next/server";
 import type { User } from "@supabase/supabase-js";
 import { createServerSupabaseClient } from "@/lib/supabase-server";

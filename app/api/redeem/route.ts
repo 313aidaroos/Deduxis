@@ -1,3 +1,4 @@
+// Change note (Claude, Sep 2026): Typed; no behavior change. See docs/LAUNCH_NOTES.md.
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { redeem, buyIxisUrl, WalletError } from '@/lib/apixis-wallet';
