@@ -4,7 +4,7 @@ _Updated 2026-09-25. One notes file per repo: what was changed, file by file, an
 
 ## Status
 
-Ready for testers after keys. Before paid launch: enforce the 200-receipt cap.
+Ready after keys. The seat's 200 receipts per month is enforced.
 
 ## Connect (in order)
 
@@ -22,10 +22,6 @@ App `deduxis`. Sells `deduxis.receipts.monthly`.
 
 None pending.
 
-## Open items
-
-- The plan says 200 receipts; nothing enforces it yet.
-
 ## What changed, file by file
 
 Each changed backend code file also starts with a one-line `Change note (Claude, Sep 2026)` comment saying the same thing.
@@ -36,8 +32,8 @@ Each changed backend code file also starts with a one-line `Change note (Claude,
 | `.gitignore` | `<a>` → `Link` (lint). No visual change. |
 | `app/api/chat/route.ts` | Sign-in required, rate limited. |
 | `app/api/export/route.ts` | CSV: neutralizes spreadsheet formulas; no crash on numeric strings. |
-| `app/api/extract/route.ts` | Paid AI extraction now needs a seat and is rate limited (was open). |
-| `app/api/receipts/route.ts` | Sign-in required, rate limited. |
+| `app/api/extract/route.ts` | Paid AI extraction needs a seat, is rate limited, and stops at the monthly cap. |
+| `app/api/receipts/route.ts` | Sign-in required, rate limited, 200 receipts per seat month. |
 | `app/api/redeem/route.ts` | Typed; no behavior change. |
 | `app/chat/page.tsx` | `<a>` → `Link` (lint). No visual change. |
 | `app/dashboard/page.tsx` | `<a>` → `Link` (lint). No visual change. |
@@ -45,6 +41,7 @@ Each changed backend code file also starts with a one-line `Change note (Claude,
 | `app/page.tsx` | `<a>` → `Link` (lint). No visual change. |
 | `app/pricing/page.tsx` | `<a>` → `Link` (lint). No visual change. |
 | `docs/LAUNCH_NOTES.md` | This file. |
-| `lib/guard.ts` | New. `guard({seat, route, max})`: sign-in, seat check and rate limit in one call. |
+| `lib/guard.ts` | New. `guard({seat, route, max})`: sign-in, seat check (returns the seat) and rate limit in one call. |
+| `lib/quota.ts` | New. 200 receipts per 30-day seat period, counted from the seat's renewal date. |
 
 _Changes are backend and plumbing only. Pages, design and UI are not changed except where noted as a build or lint fix with no visual change._
