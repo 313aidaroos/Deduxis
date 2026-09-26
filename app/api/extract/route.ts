@@ -1,7 +1,9 @@
-// Change note (Claude, Sep 2026): Paid AI extraction now needs a seat and is rate limited (was open). See docs/LAUNCH_NOTES.md.
+// Change note (Claude, Sep 2026): Paid AI extraction needs a seat, is rate limited, and stops at the 200-receipt monthly cap. See docs/LAUNCH_NOTES.md.
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { guard } from '@/lib/guard';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { quotaResponse, receiptsUsed, seatPeriodStart } from '@/lib/quota';
 
 const EXTRACTION_SYSTEM = `You are a receipt data extraction assistant. Extract structured data from receipt images.
 
@@ -30,6 +32,11 @@ export async function POST(req: NextRequest) {
   const access = await guard({ seat: true, route: 'extract', max: 60 });
   if (!access.ok) return access.response;
   try {
+    // Don't pay for an AI scan the seat can't save: stop at the monthly receipt cap.
+    const periodStart = seatPeriodStart(access.seat?.renews_at ?? null);
+    const overCap = quotaResponse(await receiptsUsed(await createServerSupabaseClient(), access.user.id, periodStart), periodStart);
+    if (overCap) return overCap;
+
     const apiKey = process.env.ANTHROPIC_API_KEY;
     
     if (!apiKey) {

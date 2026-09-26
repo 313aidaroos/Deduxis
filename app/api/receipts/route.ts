@@ -1,7 +1,8 @@
-// Change note (Claude, Sep 2026): Sign-in required, rate limited. See docs/LAUNCH_NOTES.md.
+// Change note (Claude, Sep 2026): Sign-in required, rate limited, 200 receipts per seat month. See docs/LAUNCH_NOTES.md.
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { guard } from '@/lib/guard';
+import { quotaResponse, receiptsUsed, seatPeriodStart } from '@/lib/quota';
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,6 +10,11 @@ export async function POST(req: NextRequest) {
     if (!access.ok) return access.response;
     const user = access.user;
     const supabase = await createServerSupabaseClient();
+
+    // Seat includes 200 receipts per 30-day period.
+    const periodStart = seatPeriodStart(access.seat?.renews_at ?? null);
+    const overCap = quotaResponse(await receiptsUsed(supabase, user.id, periodStart), periodStart);
+    if (overCap) return overCap;
 
     const { 
       merchant, 
