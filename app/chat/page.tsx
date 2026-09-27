@@ -65,7 +65,7 @@ function ChatInner() {
           <span className="eyebrow">HELLO, I’M CIXY</span>
           <h2>Let’s make sense of it.</h2>
           <p>
-            As-salamu alaykum! Need help choosing a category, organizing your
+            Need help choosing a category, organizing your
             records, or preparing questions for your accountant? Start here.
           </p>
           <div className="suggestions">
@@ -116,7 +116,7 @@ function ChatInner() {
           </button>
         </form>
         <p className="chat-disclaimer">
-          Cixy can make mistakes. Not a CPA or Islamic scholar. Confirm
+          Cixy can make mistakes. Not a CPA. Confirm
           important decisions with qualified professionals.
         </p>
       </div>
