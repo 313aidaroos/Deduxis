@@ -1,15 +1,16 @@
 import { Suspense } from "react";
 import Workspace from "@/components/workspace";
-export default function Dashboard() {
+export const metadata = { title: "Explore the workspace" };
+export default function Demo() {
   return (
     <Suspense
       fallback={
         <main id="main" className="empty-state">
-          Opening your workspace…
+          Opening the demo…
         </main>
       }
     >
-      <Workspace />
+      <Workspace demo />
     </Suspense>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { SiteHeader, SiteFooter } from "@/components/site-header";
 
 import { useState, useRef } from "react";
 
@@ -41,7 +42,9 @@ export default function Pricing() {
       }
 
       if (response.status === 402) {
-        setError(`You need ${data.needed.toLocaleString()} Ixis to redeem this seat.`);
+        setError(
+          `You need ${Number(data.needed ?? IXIS_PRICE).toLocaleString()} Ixis to redeem this seat.`,
+        );
         setBuyUrl(data.buyUrl);
         return;
       }
@@ -50,89 +53,89 @@ export default function Pricing() {
         throw new Error(data.error || "Failed to redeem");
       }
 
-      setMessage(`Success! Receipt ID: ${data.receiptId}. Your seat is now active.`);
+      setMessage(
+        `Success! Receipt ID: ${data.receiptId}. Your seat is now active.`,
+      );
       attemptIdRef.current = null; // Reset for next purchase
     } catch (err) {
-      setError((err instanceof Error ? err.message : String(err)) || "An error occurred during redemption");
+      setError(
+        (err instanceof Error ? err.message : String(err)) ||
+          "An error occurred during redemption",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <nav className="sticky top-0 z-50 bg-white/95 dark:bg-black/95 border-b border-gray-200 dark:border-gray-800 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link href="/" className="text-xl font-bold">Deduxis</Link>
-            <div className="hidden md:flex items-center gap-6 text-sm">
-              <Link href="/#what-we-do" className="hover:text-gray-600 dark:hover:text-gray-400 transition">What we do</Link>
-              <Link href="/#how-it-works" className="hover:text-gray-600 dark:hover:text-gray-400 transition">How it works</Link>
-              <Link href="/#vision" className="hover:text-gray-600 dark:hover:text-gray-400 transition">Our vision</Link>
-              <Link href="/#faq" className="hover:text-gray-600 dark:hover:text-gray-400 transition">FAQs</Link>
-              <Link href="/pricing" className="hover:text-gray-600 dark:hover:text-gray-400 transition">Pricing</Link>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link href="/chat" className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-900 transition">Ask Cixy</Link>
-            <Link href="/login" className="px-4 py-2 text-sm bg-black dark:bg-white text-white dark:text-black rounded hover:opacity-90 transition">Get Started</Link>
-          </div>
-        </div>
-      </nav>
-
-      <main className="flex-1 flex flex-col items-center justify-center p-6">
-        <div className="max-w-2xl text-center space-y-8">
-          <div>
-            <div className="text-sm uppercase tracking-[3px] text-gray-500 mb-3">Receipt Intelligence</div>
-            <h1 className="text-5xl font-bold">Monthly Seat</h1>
-          </div>
-          
-          <div className="text-6xl font-bold">
-            {IXIS_PRICE.toLocaleString()} Ixis
-            <span className="text-3xl text-gray-500 ml-2">· ${USD_PRICE}</span>
-          </div>
-          
-          <p className="text-xl text-gray-600 dark:text-gray-400">per month · includes 200 receipts</p>
-
-          <div className="pt-4">
-            <button
-              onClick={handleRedeem}
-              disabled={loading}
-              className="px-12 py-4 bg-black dark:bg-white text-white dark:text-black rounded-lg text-xl hover:opacity-90 transition disabled:opacity-50"
-            >
-              {loading ? "Processing..." : `Redeem · ${IXIS_PRICE.toLocaleString()} Ixis`}
-            </button>
-          </div>
-
-          {message && (
-            <div className="p-4 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-200 rounded">
-              {message}
-            </div>
-          )}
-
-          {error && (
-            <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 rounded space-y-3">
-              <p>{error}</p>
-              {buyUrl && (
-                <a
-                  href={buyUrl}
-                  className="inline-block px-6 py-2 bg-red-800 dark:bg-red-200 text-white dark:text-red-900 rounded hover:opacity-90 transition"
-                >
-                  Buy Ixis
-                </a>
-              )}
-            </div>
-          )}
-
-          <p className="text-sm text-gray-500 pt-4">
-            Extra receipts metered via Apixis Wallet. No card charges — Ixis only.
+    <>
+      <SiteHeader />
+      <main id="main" className="pricing-page container">
+        <div className="page-intro">
+          <span className="eyebrow">
+            ONE PLAN. A LITTLE MORE PEACE OF MIND.
+          </span>
+          <h1>A home for your receipts.</h1>
+          <p>
+            Keep your business records together, from the first photo to the
+            final export.
           </p>
         </div>
+        <div className="pricing-card">
+          <div className="price-main">
+            <span className="badge lavender">Receipt Intelligence</span>
+            <h2>Everything in order.</h2>
+            <div className="price-number">
+              {IXIS_PRICE.toLocaleString()} <span>Ixis</span>
+            </div>
+            <p className="price-note">per month · ${USD_PRICE} equivalent</p>
+            <p className="price-note">200 receipts per seat period</p>
+            <Link href="/demo" className="text-link">
+              Explore before you begin →
+            </Link>
+          </div>
+          <div className="price-details">
+            <strong>A clearer way to keep records</strong>
+            <ul>
+              <li>AI receipt extraction</li>
+              <li>Review and edit your receipt details</li>
+              <li>Search and organize by category</li>
+              <li>Standard and accounting CSV exports</li>
+              <li>Original receipt images alongside your records</li>
+            </ul>
+            <button
+              className="button primary full"
+              onClick={handleRedeem}
+              disabled={loading}
+            >
+              {loading
+                ? "Processing…"
+                : `Redeem · ${IXIS_PRICE.toLocaleString()} Ixis`}
+            </button>
+            {message && (
+              <div role="status" className="notice success">
+                Your seat is active.{" "}
+                <Link href="/dashboard">Open your workspace →</Link>
+              </div>
+            )}
+            {error && (
+              <div role="alert" className="notice error">
+                {error}
+                {buyUrl && (
+                  <a href={buyUrl} className="text-link">
+                    Buy Ixis →
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+        <p className="pricing-fineprint">
+          Redeemed with Ixis through Apixis Wallet. The current plan has a
+          200-receipt cap per seat period. No automatic overage charges.
+        </p>
       </main>
-
-      <footer className="border-t border-gray-200 dark:border-gray-800 py-8 px-6 text-center text-sm text-gray-500">
-        <p>Part of the Apixis family · Powered by Ixis</p>
-      </footer>
-    </div>
+      <SiteFooter />
+    </>
   );
 }

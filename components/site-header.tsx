@@ -1,0 +1,69 @@
+"use client";
+import Link from "next/link";
+import { useState } from "react";
+export function SiteHeader() {
+  const [open, setOpen] = useState(false);
+  return (
+    <header className="site-header">
+      <div className="site-nav container">
+        <Link className="wordmark" href="/" aria-label="Deduxis home">
+          Deduxis<span className="brand-dot">.</span>
+        </Link>
+        <nav
+          aria-label="Main navigation"
+          className={open ? "main-nav open" : "main-nav"}
+        >
+          <Link onClick={() => setOpen(false)} href="/#how-it-works">
+            How it works
+          </Link>
+          <Link onClick={() => setOpen(false)} href="/#features">
+            Features
+          </Link>
+          <Link onClick={() => setOpen(false)} href="/pricing">
+            Pricing
+          </Link>
+          <Link onClick={() => setOpen(false)} href="/demo">
+            Explore the workspace
+          </Link>
+        </nav>
+        <div className="nav-actions">
+          <Link className="sign-in" href="/login">
+            Sign in
+          </Link>
+          <Link className="button primary small" href="/login">
+            Get started <span aria-hidden>↗</span>
+          </Link>
+          <button
+            className="menu-toggle"
+            aria-expanded={open}
+            aria-label={open ? "Close navigation" : "Open navigation"}
+            onClick={() => setOpen(!open)}
+          >
+            {open ? "×" : "☰"}
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+}
+export function SiteFooter() {
+  return (
+    <footer className="site-footer container">
+      <div>
+        <Link href="/" className="wordmark">
+          Deduxis<span className="brand-dot">.</span>
+        </Link>
+        <span className="family">Part of the Apixis family</span>
+      </div>
+      <nav aria-label="Footer navigation">
+        <Link href="/#faq">Questions & answers</Link>
+        <Link href="/pricing">Pricing</Link>
+        <Link href="/chat">Ask Cixy</Link>
+      </nav>
+      <p>
+        Organize with confidence. Confirm filing decisions with your tax
+        professional.
+      </p>
+    </footer>
+  );
+}

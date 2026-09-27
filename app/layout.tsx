@@ -1,26 +1,22 @@
 import type { Metadata } from "next";
-import { Special_Elite } from "next/font/google";
 import "./globals.css";
-
-const specialElite = Special_Elite({ 
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-special-elite"
-});
-
 export const metadata: Metadata = {
-  title: "Deduxis — Receipt Intelligence",
-  description: "Capture receipts, extract line items, categorize deductions, export for tax time.",
+  title: {
+    default: "Deduxis — Every receipt. Everything in order.",
+    template: "%s · Deduxis",
+  },
+  description:
+    "Turn everyday receipts into organized records you can review, categorize, and export.",
 };
-
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${specialElite.variable} antialiased`}>
+      <body>
+        <a className="skip-link" href="#main">
+          Skip to content
+        </a>
         {children}
       </body>
     </html>

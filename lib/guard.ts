@@ -6,7 +6,9 @@ import { entitlements, type Entitlement } from "@/lib/apixis-wallet";
 
 export const SEAT_PRODUCT = "deduxis.receipts.monthly";
 
-type Guarded = { ok: true; user: User; seat: Entitlement | null } | { ok: false; response: NextResponse };
+type Guarded =
+  | { ok: true; user: User; seat: Entitlement | null }
+  | { ok: false; response: NextResponse };
 
 // Per-instance limiter for AI calls (serverless instances don't share memory: a speed bump,
 // not a quota).
@@ -20,27 +22,80 @@ function limited(key: string, max: number, windowMs: number, now = Date.now()) {
 }
 
 /** Signed-in user, optionally with an active Receipt Intelligence seat, within the rate limit. */
-export async function guard(opts: { seat?: boolean; route: string; max: number; windowMs?: number }): Promise<Guarded> {
+export async function guard(opts: {
+  seat?: boolean;
+  route: string;
+  max: number;
+  windowMs?: number;
+}): Promise<Guarded> {
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  )
+    return {
+      ok: false,
+      response: NextResponse.json(
+        {
+          error:
+            "Sign-in is temporarily unavailable. Please try again shortly.",
+        },
+        { status: 503 },
+      ),
+    };
   const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user?.email) {
-    return { ok: false, response: NextResponse.json({ error: "Sign in to continue." }, { status: 401 }) };
+    return {
+      ok: false,
+      response: NextResponse.json(
+        { error: "Sign in to continue." },
+        { status: 401 },
+      ),
+    };
   }
   let seat: Entitlement | null = null;
   if (opts.seat) {
-    const owned = await entitlements(user.email, "deduxis");
-    seat = owned.find((e) => e.product_key === SEAT_PRODUCT && e.status === "active") ?? null;
+    let owned: Entitlement[];
+    try {
+      owned = await entitlements(user.email, "deduxis");
+    } catch {
+      return {
+        ok: false,
+        response: NextResponse.json(
+          { error: "We could not check your plan. Please try again shortly." },
+          { status: 503 },
+        ),
+      };
+    }
+    seat =
+      owned.find(
+        (e) => e.product_key === SEAT_PRODUCT && e.status === "active",
+      ) ?? null;
     if (!seat) {
       return {
         ok: false,
-        response: NextResponse.json({ error: "No active seat. Redeem a seat at /pricing." }, { status: 403 }),
+        response: NextResponse.json(
+          { error: "No active seat. Redeem a seat at /pricing." },
+          { status: 403 },
+        ),
       };
     }
   }
-  if (limited(`${opts.route}:${user.id}`, opts.max, opts.windowMs ?? 60 * 60 * 1000)) {
+  if (
+    limited(
+      `${opts.route}:${user.id}`,
+      opts.max,
+      opts.windowMs ?? 60 * 60 * 1000,
+    )
+  ) {
     return {
       ok: false,
-      response: NextResponse.json({ error: "Too many requests. Please wait a bit." }, { status: 429 }),
+      response: NextResponse.json(
+        { error: "Too many requests. Please wait a bit." },
+        { status: 429 },
+      ),
     };
   }
   return { ok: true, user, seat };

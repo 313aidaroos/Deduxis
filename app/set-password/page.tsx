@@ -1,79 +1,66 @@
 "use client";
-
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { setPassword } from "@/app/login/actions";
-
-function SetPasswordInner() {
+import { AuthScreen } from "@/components/auth-screen";
+function PasswordInner() {
   const params = useSearchParams();
-  const next = params?.get("next") ?? "/";
+  const raw = params.get("next") || "/dashboard";
+  const next =
+    raw.startsWith("/") && !raw.startsWith("//") ? raw : "/dashboard";
   const [notice, setNotice] = useState("");
-
+  const [busy, setBusy] = useState(false);
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-md space-y-8">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-gray-500 mb-2">DEDUXIS · YOU ARE SIGNED IN</p>
-          <h1 className="text-3xl font-bold">Choose a password</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Next time you can sign in without waiting for an email. This password works on every Apixis family site.
-          </p>
+    <AuthScreen>
+      <span className="eyebrow">YOUR ACCOUNT</span>
+      <h1>
+        Make yourself
+        <br />
+        at home.
+      </h1>
+      <p>Choose a password for a quicker sign-in next time.</p>
+      <form
+        action={async (form) => {
+          setBusy(true);
+          setNotice("");
+          const result = await setPassword(form);
+          if (result?.message) setNotice(result.message);
+          setBusy(false);
+        }}
+      >
+        <input type="hidden" name="next" value={next} />
+        <div className="field">
+          <label htmlFor="password">New password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            required
+            minLength={8}
+            autoComplete="new-password"
+            placeholder="At least 8 characters"
+          />
         </div>
-
         {notice && (
-          <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 rounded">
+          <p role="alert" className="notice error">
             {notice}
-          </div>
+          </p>
         )}
-
-        <form
-          action={async (form) => {
-            const result = await setPassword(form);
-            if (result?.message) setNotice(result.message);
-          }}
-          className="space-y-6"
-        >
-          <input type="hidden" name="next" value={next} />
-          
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium mb-2">
-              New password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              minLength={8}
-              autoComplete="new-password"
-              placeholder="min 8 characters"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-black focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full px-8 py-4 bg-black dark:bg-white text-white dark:text-black rounded text-lg hover:opacity-90 transition"
-          >
-            Save password and continue
-          </button>
-        </form>
-
-        <p className="text-center text-sm">
-          <Link href={next} className="text-gray-600 dark:text-gray-400 hover:underline">
-            Skip for now →
-          </Link>
-        </p>
+        <button disabled={busy} className="button primary full">
+          {busy ? "Saving…" : "Save password and continue →"}
+        </button>
+      </form>
+      <div className="auth-footer">
+        <Link href={next}>Skip for now →</Link>
       </div>
-    </div>
+    </AuthScreen>
   );
 }
-
-export default function SetPasswordPage() {
+export default function SetPassword() {
   return (
-    <Suspense fallback={null}>
-      <SetPasswordInner />
+    <Suspense>
+      <PasswordInner />
     </Suspense>
   );
 }
