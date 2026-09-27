@@ -1,7 +1,7 @@
 // Change note (Claude, Sep 2026): Sign-in required, rate limited. See docs/LAUNCH_NOTES.md.
-import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
-import { guard } from '@/lib/guard';
+import { NextRequest, NextResponse } from "next/server";
+import Anthropic from "@anthropic-ai/sdk";
+import { guard } from "@/lib/guard";
 
 const CIXY_SYSTEM = `You are Cixy, a Muslim AI operator serving on Deduxis — receipt intelligence for expense categorization and tax deductions.
 
@@ -36,15 +36,15 @@ const CIXY_SYSTEM = `You are Cixy, a Muslim AI operator serving on Deduxis — r
 Be concise, helpful, and honest.`;
 
 export async function POST(req: NextRequest) {
-  const access = await guard({ route: 'chat', max: 40 });
+  const access = await guard({ route: "chat", max: 40 });
   if (!access.ok) return access.response;
   try {
     const apiKey = process.env.ANTHROPIC_API_KEY;
-    
+
     if (!apiKey) {
       return NextResponse.json(
         { error: "Cixy is not available right now." },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     const anthropic = new Anthropic({ apiKey });
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5',
+      model: "claude-sonnet-4-5",
       max_tokens: 1024,
       system: CIXY_SYSTEM,
       messages: messages.map((msg: { role: string; content: string }) => ({
@@ -62,16 +62,21 @@ export async function POST(req: NextRequest) {
       })),
     });
 
-    const assistantMessage = response.content[0].type === 'text' 
-      ? response.content[0].text 
-      : 'I encountered an error processing your request.';
+    const assistantMessage =
+      response.content[0].type === "text"
+        ? response.content[0].text
+        : "I encountered an error processing your request.";
 
     return NextResponse.json({ message: assistantMessage });
   } catch (error) {
-    console.error('Chat API error:', error);
+    console.error("Chat API error:", error);
     return NextResponse.json(
-      { error: (error instanceof Error ? error.message : String(error)) || 'An error occurred' },
-      { status: 500 }
+      {
+        error:
+          (error instanceof Error ? error.message : String(error)) ||
+          "An error occurred",
+      },
+      { status: 500 },
     );
   }
 }

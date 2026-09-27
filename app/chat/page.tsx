@@ -1,135 +1,132 @@
 "use client";
+import { Suspense, useState, useRef, useEffect } from "react";
 import Link from "next/link";
-
-import { useState, useRef, useEffect } from "react";
-
-interface Message {
-  role: "user" | "assistant";
-  content: string;
-}
-
-export default function Chat() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content: "As-salamu alaykum! I'm Cixy, your expense and deduction expert. I can help you understand receipt categories, business deductions, and tax organization. What would you like to know? (Note: I'm not a CPA or Islamic scholar — please confirm important decisions with qualified professionals.)"
-    }
-  ]);
+import { WorkspaceShell } from "@/components/workspace-shell";
+type Message = { role: "user" | "assistant"; content: string };
+function ChatInner() {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const end = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    scrollToBottom();
+    end.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [messages]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function send(e: React.FormEvent) {
     e.preventDefault();
-    if (!input.trim() || loading) return;
-
-    const userMessage = input.trim();
+    if (!input.trim() || busy) return;
+    const next: Message[] = [
+      ...messages,
+      { role: "user", content: input.trim() },
+    ];
+    setMessages(next);
     setInput("");
-    setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
-    setLoading(true);
-
+    setBusy(true);
+    setError("");
     try {
-      const response = await fetch("/api/chat", {
+      const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [...messages, { role: "user", content: userMessage }],
-        }),
+        body: JSON.stringify({ messages: next }),
       });
-
-      if (!response.ok) {
-        if (response.status === 503) {
-          throw new Error("Cixy is not available right now. Please check back later.");
-        }
-        throw new Error("Failed to get response");
-      }
-
-      const data = await response.json();
-      setMessages((prev) => [...prev, { role: "assistant", content: data.message }]);
-    } catch (error) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: (error instanceof Error ? error.message : String(error)) || "Sorry, I encountered an error. Please try again.",
-        },
-      ]);
+      const data = await res.json();
+      if (!res.ok)
+        throw new Error(
+          res.status === 401
+            ? "Sign in to chat with Cixy."
+            : res.status === 503
+              ? "Cixy is unavailable right now. Please try again shortly."
+              : data.error || "Could not send your message.",
+        );
+      setMessages([...next, { role: "assistant", content: data.message }]);
+    } catch (e) {
+      setInput(next[next.length - 1].content);
+      setMessages(next.slice(0, -1));
+      setError(
+        e instanceof Error
+          ? e.message
+          : "Cixy is unavailable. Please try again.",
+      );
     } finally {
-      setLoading(false);
+      setBusy(false);
     }
-  };
-
+  }
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="p-6 border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Chat with Cixy</h1>
-          <Link href="/"
-            className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-900 transition"
-          >
-            Home
-          </Link>
+    <WorkspaceShell>
+      <div className="workspace-title">
+        <div>
+          <h1>A little help from Cixy.</h1>
+          <p>Your companion for clearer expense records.</p>
         </div>
-      </header>
-
-      <main className="flex-1 overflow-y-auto p-6">
-        <div className="max-w-4xl mx-auto space-y-6">
-          {messages.map((msg, idx) => (
-            <div
-              key={idx}
-              className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`max-w-[80%] p-4 rounded-lg ${
-                  msg.role === "user"
-                    ? "bg-black dark:bg-white text-white dark:text-black"
-                    : "bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-800"
-                }`}
-              >
-                <p className="whitespace-pre-wrap">{msg.content}</p>
-              </div>
+        <span className="badge lavender">Ask Cixy</span>
+      </div>
+      <div className="chat-layout">
+        <div className="cixy-intro">
+          <span className="eyebrow">HELLO, I’M CIXY</span>
+          <h2>Let’s make sense of it.</h2>
+          <p>
+            As-salamu alaykum! Need help choosing a category, organizing your
+            records, or preparing questions for your accountant? Start here.
+          </p>
+          <div className="suggestions">
+            {[
+              "How should I categorize office supplies?",
+              "What should I keep with a receipt?",
+              "Help me prepare for tax time.",
+            ].map((q) => (
+              <button key={q} onClick={() => setInput(q)}>
+                {q}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="chat-messages" aria-live="polite">
+          {messages.map((m, i) => (
+            <div key={i} className={`bubble ${m.role}`}>
+              <strong>{m.role === "user" ? "You" : "Cixy"}</strong>
+              {m.content}
             </div>
           ))}
-          {loading && (
-            <div className="flex justify-start">
-              <div className="bg-gray-100 dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-800">
-                <p className="text-gray-600 dark:text-gray-400">Cixy is thinking...</p>
-              </div>
+          {busy && (
+            <div className="bubble" role="status">
+              Cixy is thinking…
             </div>
           )}
-          <div ref={messagesEndRef} />
+          <div ref={end} />
         </div>
-      </main>
-
-      <div className="border-t border-gray-200 dark:border-gray-800 p-6">
-        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
-          <div className="flex gap-4">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about expenses, deductions, or categories..."
-              className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-black focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
-              disabled={loading}
-            />
-            <button
-              type="submit"
-              disabled={loading || !input.trim()}
-              className="px-8 py-3 bg-black dark:bg-white text-white dark:text-black rounded hover:opacity-90 transition disabled:opacity-50"
-            >
-              Send
-            </button>
+        {error && (
+          <div role="alert" className="notice error">
+            {error} <Link href="/login?next=/chat">Sign in →</Link>
           </div>
+        )}
+        <form className="chat-composer" onSubmit={send}>
+          <label className="sr-only" htmlFor="chat-input">
+            Your message to Cixy
+          </label>
+          <input
+            id="chat-input"
+            placeholder="What’s on your mind?"
+            value={input}
+            maxLength={4000}
+            onChange={(e) => setInput(e.target.value)}
+            disabled={busy}
+          />
+          <button className="button primary" disabled={busy || !input.trim()}>
+            Send ↗
+          </button>
         </form>
+        <p className="chat-disclaimer">
+          Cixy can make mistakes. Not a CPA or Islamic scholar. Confirm
+          important decisions with qualified professionals.
+        </p>
       </div>
-    </div>
+    </WorkspaceShell>
+  );
+}
+export default function Chat() {
+  return (
+    <Suspense>
+      <ChatInner />
+    </Suspense>
   );
 }

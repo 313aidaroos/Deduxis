@@ -1,155 +1,232 @@
 import Link from "next/link";
+import Image from "next/image";
+import { SiteHeader, SiteFooter } from "@/components/site-header";
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white/95 dark:bg-black/95 border-b border-gray-200 dark:border-gray-800 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link href="/" className="text-xl font-bold">Deduxis</Link>
-            <div className="hidden md:flex items-center gap-6 text-sm">
-              <a href="#what-we-do" className="hover:text-gray-600 dark:hover:text-gray-400 transition">What we do</a>
-              <a href="#how-it-works" className="hover:text-gray-600 dark:hover:text-gray-400 transition">How it works</a>
-              <a href="#vision" className="hover:text-gray-600 dark:hover:text-gray-400 transition">Our vision</a>
-              <a href="#faq" className="hover:text-gray-600 dark:hover:text-gray-400 transition">FAQs</a>
-              <Link href="/pricing" className="hover:text-gray-600 dark:hover:text-gray-400 transition">Pricing</Link>
+    <>
+      <SiteHeader />
+      <main id="main">
+        <section className="hero container">
+          <div className="hero-copy">
+            <p className="eyebrow">
+              A little less paperwork. A lot more clarity.
+            </p>
+            <h1>
+              Every receipt.
+              <br />
+              <em>
+                Everything
+                <br className="desktop-break" /> in order.
+              </em>
+            </h1>
+            <p className="hero-description">
+              Turn everyday receipts into organized records you can review,
+              categorize, and export. More time for the business you love.
+            </p>
+            <div className="button-row">
+              <Link className="button primary" href="/login">
+                Get started <span aria-hidden>↗</span>
+              </Link>
+              <Link className="button secondary" href="/demo">
+                Explore the workspace <span aria-hidden>→</span>
+              </Link>
+            </div>
+            <div className="hero-note">
+              <span className="check-dot">✓</span> Your receipts. Your records.
+              One organized place.
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Link href="/chat" className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-900 transition">Ask Cixy</Link>
-            <Link href="/login" className="px-4 py-2 text-sm bg-black dark:bg-white text-white dark:text-black rounded hover:opacity-90 transition">Get Started</Link>
+          <div className="hero-visual">
+            <Image
+              src="/images/receipt-desk.webp"
+              alt="A business owner photographing a receipt at a colorful, sunlit desk"
+              fill
+              preload
+              sizes="(max-width: 760px) 100vw, 55vw"
+            />
+            <div className="floating-receipt">
+              <div className="float-top">
+                <span className="mini-file" aria-hidden>
+                  ▤
+                </span>
+                <span className="badge mint">Ready to review</span>
+              </div>
+              <strong>Paper & Co.</strong>
+              <div className="float-amount">$48.60</div>
+              <span className="badge lavender">Office supplies</span>
+              <small>Example receipt</small>
+            </div>
+            <div className="photo-caption">
+              Small moments. Beautifully organized.
+            </div>
           </div>
-        </div>
-      </nav>
-
-      {/* Hero */}
-      <section className="pt-20 pb-16 px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-6xl md:text-7xl font-bold tracking-tight mb-6">
-            Receipt Intelligence
-          </h1>
-          <p className="text-2xl text-gray-600 dark:text-gray-400 mb-10">
-            Capture. Extract. Categorize. Export.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/login" className="px-8 py-4 bg-black dark:bg-white text-white dark:text-black rounded-lg text-lg hover:opacity-90 transition">
-              Start free trial
+        </section>
+        <section
+          className="workflow container"
+          id="how-it-works"
+          aria-label="How it works"
+        >
+          {[
+            [
+              "01",
+              "Upload",
+              "Snap a photo or choose a receipt image.",
+              "lavender",
+              "↥",
+            ],
+            ["02", "Review", "Check the details. Make it yours.", "peach", "⌕"],
+            ["03", "Organize", "Give every expense a place.", "mint", "▤"],
+            [
+              "04",
+              "Export",
+              "Take clean records to your accountant.",
+              "yellow",
+              "↗",
+            ],
+          ].map(([n, title, copy, color, icon]) => (
+            <div key={n} className={`step ${color}`}>
+              <div className="step-top">
+                <span>{n}</span>
+                <span className="step-symbol" aria-hidden>
+                  {icon}
+                </span>
+              </div>
+              <h2>{title}</h2>
+              <p>{copy}</p>
+            </div>
+          ))}
+        </section>
+        <section className="feature-section container" id="features">
+          <div className="feature-photo">
+            <Image
+              src="/images/receipt.webp"
+              alt="A paper receipt ready to organize"
+              fill
+              sizes="(max-width: 760px) 90vw, 25vw"
+            />
+            <span className="photo-label">The small details add up.</span>
+          </div>
+          <div className="feature-copy">
+            <p className="eyebrow">LESS CLUTTER. MORE CONFIDENCE.</p>
+            <h2>
+              A clear view of your
+              <br />
+              business expenses.
+            </h2>
+            <p>
+              From daily coffee to office supplies, keep your receipts together.
+              Find what you need, check every detail, and head into tax time a
+              little lighter.
+            </p>
+            <Link href="/demo" className="text-link">
+              Find your flow <span aria-hidden>→</span>
             </Link>
-            <a href="#how-it-works" className="px-8 py-4 border border-gray-300 dark:border-gray-700 rounded-lg text-lg hover:bg-gray-100 dark:hover:bg-gray-900 transition">
-              See how it works
-            </a>
           </div>
-        </div>
-      </section>
-
-      {/* What we do */}
-      <section id="what-we-do" className="border-t border-gray-200 dark:border-gray-800 py-20 px-6">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="text-sm uppercase tracking-[3px] text-gray-500 mb-3">Product</div>
-            <h2 className="text-4xl font-bold">What we do</h2>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="p-6 border border-gray-200 dark:border-gray-800 rounded-lg">
-              <div className="text-3xl mb-4">📸</div>
-              <h3 className="font-bold text-xl mb-2">Capture</h3>
-              <p className="text-gray-600 dark:text-gray-400">Upload receipts from your phone or computer. Photos, scans, PDFs — we handle them all.</p>
+          <div className="mini-workspace">
+            <div className="section-heading">
+              <strong>Recent receipts</strong>
+              <span className="badge lavender">Example</span>
             </div>
-            <div className="p-6 border border-gray-200 dark:border-gray-800 rounded-lg">
-              <div className="text-3xl mb-4">🔍</div>
-              <h3 className="font-bold text-xl mb-2">Extract</h3>
-              <p className="text-gray-600 dark:text-gray-400">AI vision reads merchant, date, total, tax, line items, and payment method (only last 4 digits).</p>
-            </div>
-            <div className="p-6 border border-gray-200 dark:border-gray-800 rounded-lg">
-              <div className="text-3xl mb-4">📊</div>
-              <h3 className="font-bold text-xl mb-2">Categorize & Export</h3>
-              <p className="text-gray-600 dark:text-gray-400">Smart Schedule C suggestions + one-click CSV or QuickBooks export for tax time.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section id="how-it-works" className="border-t border-gray-200 dark:border-gray-800 py-20 px-6 bg-gray-50 dark:bg-gray-950">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="text-sm uppercase tracking-[3px] text-gray-500 mb-3">Simple</div>
-            <h2 className="text-4xl font-bold">How it works</h2>
-          </div>
-
-          <div className="space-y-8">
             {[
-              { step: "1", title: "Upload a receipt", desc: "Take a photo or upload an image. We support JPG, PNG, HEIC." },
-              { step: "2", title: "AI extracts the data", desc: "Claude Vision reads every line item, total, tax, date, and merchant in seconds." },
-              { step: "3", title: "Review & categorize", desc: "We suggest the right Schedule C category. You can override — we remember your preference." },
-              { step: "4", title: "Export for tax time", desc: "Download CSV or QuickBooks-ready files. All receipts stay private and audit-ready." },
-            ].map((item, i) => (
-              <div key={i} className="flex gap-6 items-start">
-                <div className="w-10 h-10 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center font-bold flex-shrink-0">
-                  {item.step}
-                </div>
+              ["Paper & Co.", "Office supplies", "$48.60", "lavender"],
+              ["Corner Cafe", "Meals", "$23.40", "peach"],
+              ["City Parking", "Travel", "$16.00", "mint"],
+            ].map(([name, cat, amount, color]) => (
+              <div className="mini-row" key={name}>
+                <span className="mini-file" aria-hidden>
+                  ▤
+                </span>
                 <div>
-                  <h4 className="font-bold text-xl mb-1">{item.title}</h4>
-                  <p className="text-gray-600 dark:text-gray-400">{item.desc}</p>
+                  <strong>{name}</strong>
+                  <span className={`badge ${color}`}>{cat}</span>
                 </div>
+                <b>{amount}</b>
               </div>
             ))}
+            <div className="mini-foot">
+              A place for every receipt. A little more peace of mind.
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Our vision */}
-      <section id="vision" className="border-t border-gray-200 dark:border-gray-800 py-20 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <div className="text-sm uppercase tracking-[3px] text-gray-500 mb-3">Why we exist</div>
-          <h2 className="text-4xl font-bold mb-6">Our vision</h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed">
-            Tax time should not be painful. We believe every business owner deserves clean, accurate, 
-            and audit-ready records without hiring an army of accountants. Deduxis turns messy receipts 
-            into structured, exportable intelligence — so you can focus on building, not bookkeeping.
-          </p>
-          <p className="mt-6 text-sm text-gray-500">Halal-conscious by design. Never a CPA.</p>
-        </div>
-      </section>
-
-      {/* FAQs */}
-      <section id="faq" className="border-t border-gray-200 dark:border-gray-800 py-20 px-6 bg-gray-50 dark:bg-gray-950">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="text-sm uppercase tracking-[3px] text-gray-500 mb-3">Answers</div>
-            <h2 className="text-4xl font-bold">Frequently asked questions</h2>
+        </section>
+        <section className="benefits container">
+          <div>
+            <span className="eyebrow">BUILT FOR YOUR EVERYDAY</span>
+            <h2>
+              A better rhythm
+              <br />
+              for your receipts.
+            </h2>
           </div>
-
-          <div className="space-y-6">
+          <article>
+            <span className="badge mint">01 · Keep the original</span>
+            <h3>The picture and the details.</h3>
+            <p>
+              Review the receipt image alongside the extracted information. You
+              always have the final say.
+            </p>
+          </article>
+          <article>
+            <span className="badge peach">02 · Ready to hand over</span>
+            <h3>Your records, ready to go.</h3>
+            <p>
+              Download a CSV with your categories and notes. Share it with your
+              accountant or map it into your accounting tool.
+            </p>
+          </article>
+        </section>
+        <section className="faq-section container" id="faq">
+          <div>
+            <p className="eyebrow">GOOD QUESTIONS</p>
+            <h2>
+              A little clarity
+              <br />
+              before you begin.
+            </h2>
+            <Link className="text-link" href="/chat">
+              Ask Cixy →
+            </Link>
+          </div>
+          <div className="faq-list">
             {[
-              ["Is my receipt data private?", "Yes. All receipts are stored in a private Supabase bucket with Row Level Security. Only you can access your data."],
-              ["Do you store full card numbers?", "No. We only extract and store the last 4 digits when visible. Full card numbers are never captured."],
-              ["What categories do you support?", "We default to common US Schedule C business categories (Office Supplies, Meals, Travel, Auto, Advertising, etc.). You can override and we remember."],
-              ["Can I export to QuickBooks?", "Yes. We provide both standard CSV and QuickBooks-compatible CSV exports."],
-              ["How many receipts are included?", "The Receipt Intelligence seat includes 200 receipts per month. Extra receipts are metered through Apixis Wallet."],
-              ["Are you a CPA?", "No. Deduxis and Cixy are not tax advisors. We help organize and categorize — final filing decisions belong to your CPA."],
-            ].map(([q, a], i) => (
-              <div key={i} className="border border-gray-200 dark:border-gray-800 rounded-lg p-6">
-                <h4 className="font-bold mb-2">{q}</h4>
-                <p className="text-gray-600 dark:text-gray-400">{a}</p>
-              </div>
+              [
+                "What can I upload?",
+                "Upload JPG, PNG, or WebP receipt images, up to 3 MB each. For a PDF or HEIC receipt, first export it as one of these supported image formats.",
+              ],
+              [
+                "Can I correct the extracted details?",
+                "Yes. Review and edit the merchant, date, amount, category, and notes before saving. You can also reopen saved receipts and update them.",
+              ],
+              [
+                "Is Deduxis a tax adviser?",
+                "Deduxis helps organize records and suggests categories. It does not determine deductibility or file taxes. Confirm filing decisions with a qualified tax professional.",
+              ],
+              [
+                "How does the monthly plan work?",
+                "The Receipt Intelligence seat costs 15,000 Ixis per month and includes 200 receipts per seat period. Redeem it through Apixis Wallet. See pricing for details.",
+              ],
+            ].map(([q, a]) => (
+              <details key={q}>
+                <summary>
+                  {q}
+                  <span aria-hidden>＋</span>
+                </summary>
+                <p>{a}</p>
+              </details>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="border-t border-gray-200 dark:border-gray-800 py-16 px-6 text-center">
-        <h2 className="text-3xl font-bold mb-4">Ready to clean up your receipts?</h2>
-        <Link href="/login" className="inline-block px-8 py-4 bg-black dark:bg-white text-white dark:text-black rounded-lg text-lg hover:opacity-90 transition">
-          Get started with Deduxis
-        </Link>
-      </section>
-
-      <footer className="border-t border-gray-200 dark:border-gray-800 py-8 px-6 text-center text-sm text-gray-500">
-        <p>Part of the Apixis family · Powered by Ixis · Not a CPA</p>
-      </footer>
-    </div>
+        </section>
+        <section className="final-cta container">
+          <span className="eyebrow">MAKE ROOM FOR WHAT MATTERS</span>
+          <h2>
+            Your next chapter.
+            <br />A little more organized.
+          </h2>
+          <Link className="button light" href="/login">
+            Let’s get started <span aria-hidden>↗</span>
+          </Link>
+        </section>
+      </main>
+      <SiteFooter />
+    </>
   );
 }

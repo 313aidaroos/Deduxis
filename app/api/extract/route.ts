@@ -1,9 +1,10 @@
 // Change note (Claude, Sep 2026): Paid AI extraction needs a seat, is rate limited, and stops at the 200-receipt monthly cap. See docs/LAUNCH_NOTES.md.
-import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
-import { guard } from '@/lib/guard';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { quotaResponse, receiptsUsed, seatPeriodStart } from '@/lib/quota';
+import { NextRequest, NextResponse } from "next/server";
+import Anthropic from "@anthropic-ai/sdk";
+import { receiptImage } from "@/lib/receipt-validation";
+import { guard } from "@/lib/guard";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { quotaResponse, receiptsUsed, seatPeriodStart } from "@/lib/quota";
 
 const EXTRACTION_SYSTEM = `You are a receipt data extraction assistant. Extract structured data from receipt images.
 
@@ -29,77 +30,98 @@ Rules:
 
 export async function POST(req: NextRequest) {
   // Extraction is the paid Receipt Intelligence feature: seat holders only.
-  const access = await guard({ seat: true, route: 'extract', max: 60 });
+  const access = await guard({ seat: true, route: "extract", max: 60 });
   if (!access.ok) return access.response;
   try {
     // Don't pay for an AI scan the seat can't save: stop at the monthly receipt cap.
     const periodStart = seatPeriodStart(access.seat?.renews_at ?? null);
-    const overCap = quotaResponse(await receiptsUsed(await createServerSupabaseClient(), access.user.id, periodStart), periodStart);
+    const overCap = quotaResponse(
+      await receiptsUsed(
+        await createServerSupabaseClient(),
+        access.user.id,
+        periodStart,
+      ),
+      periodStart,
+    );
     if (overCap) return overCap;
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
-    
+
     if (!apiKey) {
       return NextResponse.json(
         { error: "Receipt extraction is not available right now." },
-        { status: 503 }
+        { status: 503 },
       );
     }
 
     const { image } = await req.json();
 
     if (!image) {
-      return NextResponse.json(
-        { error: "No image provided" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "No image provided" }, { status: 400 });
     }
 
-    // Extract base64 data
-    const base64Data = image.split(',')[1] || image;
-    const mediaType = image.match(/data:([^;]+);/)?.[1] || 'image/jpeg';
+    let validated;
+    try {
+      validated = receiptImage(image);
+    } catch (error) {
+      return NextResponse.json(
+        { error: error instanceof Error ? error.message : "Invalid image." },
+        { status: 400 },
+      );
+    }
+    const base64Data = validated.bytes.toString("base64");
+    const mediaType = validated.type;
 
     const anthropic = new Anthropic({ apiKey });
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5',
+      model: "claude-sonnet-4-5",
       max_tokens: 2048,
       system: EXTRACTION_SYSTEM,
       messages: [
         {
-          role: 'user',
+          role: "user",
           content: [
             {
-              type: 'image',
+              type: "image",
               source: {
-                type: 'base64',
-                media_type: mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+                type: "base64",
+                media_type: mediaType as
+                  | "image/jpeg"
+                  | "image/png"
+                  | "image/gif"
+                  | "image/webp",
                 data: base64Data,
               },
             },
             {
-              type: 'text',
-              text: 'Extract the receipt data as JSON.',
+              type: "text",
+              text: "Extract the receipt data as JSON.",
             },
           ],
         },
       ],
     });
 
-    const textContent = response.content.find((c) => c.type === 'text');
-    if (!textContent || textContent.type !== 'text') {
-      throw new Error('No text response from vision model');
+    const textContent = response.content.find((c) => c.type === "text");
+    if (!textContent || textContent.type !== "text") {
+      throw new Error("No text response from vision model");
     }
 
     // Parse the JSON response
-    const extracted = JSON.parse(textContent.text.trim());
+    const extracted = JSON.parse(
+      textContent.text.trim().replace(/^```(?:json)?\s*|\s*```$/g, ""),
+    );
 
     return NextResponse.json(extracted);
   } catch (error) {
-    console.error('Extract API error:', error);
+    console.error("Extract API error:", error);
     return NextResponse.json(
-      { error: (error instanceof Error ? error.message : String(error)) || 'An error occurred during extraction' },
-      { status: 500 }
+      {
+        error:
+          "Could not read this receipt. Try a clearer image or try again shortly.",
+      },
+      { status: 500 },
     );
   }
 }

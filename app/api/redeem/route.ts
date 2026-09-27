@@ -1,34 +1,43 @@
 // Change note (Claude, Sep 2026): Typed; no behavior change. See docs/LAUNCH_NOTES.md.
-import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { redeem, buyIxisUrl, WalletError } from '@/lib/apixis-wallet';
+import { NextRequest, NextResponse } from "next/server";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { redeem, buyIxisUrl, WalletError } from "@/lib/apixis-wallet";
 
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user || !user.email) {
       // Return 401 so client can redirect to /login?next=/pricing
-      return NextResponse.json({ error: 'Unauthorized', redirect: '/login?next=/pricing' }, { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized", redirect: "/login?next=/pricing" },
+        { status: 401 },
+      );
     }
 
     const { idempotencyKey } = await req.json();
-    
+
     if (!idempotencyKey) {
-      return NextResponse.json({ error: 'Missing idempotencyKey' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing idempotencyKey" },
+        { status: 400 },
+      );
     }
 
     const result = await redeem({
       ownerEmail: user.email,
-      productKey: 'deduxis.receipts.monthly',
+      productKey: "deduxis.receipts.monthly",
       idempotencyKey,
       provision: async (reservation) => {
         // Deduxis does not write local entitlements; Wallet is source of truth
         // If we ever write a local subscription row, do it here
         return { reservationId: reservation.reservationId };
       },
-      unprovision: async (reservation, result) => {
+      unprovision: async () => {
         // No local entitlement to roll back (Wallet-only)
         // If we ever write a subscription row in provision, delete it here
       },
@@ -36,13 +45,16 @@ export async function POST(req: NextRequest) {
 
     if (!result.ok) {
       // 402: Not enough Ixis
-      const buyUrl = buyIxisUrl('deduxis', `${req.nextUrl.origin}/pricing`);
-      return NextResponse.json({
-        error: 'Not enough Ixis',
-        insufficient: true,
-        needed: result.needed,
-        buyUrl,
-      }, { status: 402 });
+      const buyUrl = buyIxisUrl("deduxis", `${req.nextUrl.origin}/pricing`);
+      return NextResponse.json(
+        {
+          error: "Not enough Ixis",
+          insufficient: true,
+          needed: result.needed,
+          buyUrl,
+        },
+        { status: 402 },
+      );
     }
 
     return NextResponse.json({
@@ -50,18 +62,25 @@ export async function POST(req: NextRequest) {
       receiptId: result.receiptId,
     });
   } catch (error) {
-    console.error('Redeem error:', error);
-    
+    console.error("Redeem error:", error);
+
     if (error instanceof WalletError) {
       return NextResponse.json(
-        { error: (error instanceof Error ? error.message : String(error)), status: error.status },
-        { status: error.status }
+        {
+          error: error instanceof Error ? error.message : String(error),
+          status: error.status,
+        },
+        { status: error.status },
       );
     }
 
     return NextResponse.json(
-      { error: (error instanceof Error ? error.message : String(error)) || 'Failed to redeem' },
-      { status: 500 }
+      {
+        error:
+          (error instanceof Error ? error.message : String(error)) ||
+          "Failed to redeem",
+      },
+      { status: 500 },
     );
   }
 }
