@@ -1,90 +1,142 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
+// Change note (Claude, Sep 2026): CSV: neutralizes spreadsheet formulas; no crash on numeric strings. See docs/LAUNCH_NOTES.md.
+import { NextRequest, NextResponse } from "next/server";
+import { guard } from "@/lib/guard";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
 
 export async function GET(req: NextRequest) {
   try {
+    const access = await guard({ route: "export", max: 100 });
+    if (!access.ok) return access.response;
     const supabase = await createServerSupabaseClient();
-    
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
     if (authError || !user || !user.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(req.url);
-    const format = searchParams.get('format') || 'csv';
+    const format = searchParams.get("format") || "csv";
 
     const { data: receipts, error } = await supabase
-      .from('receipts')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('receipt_date', { ascending: false });
+      .from("receipts")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("receipt_date", { ascending: false });
 
     if (error) throw error;
 
-    if (format === 'csv') {
-      const csv = generateCSV(receipts);
+    const q = (searchParams.get("q") || "").toLowerCase();
+    const category = searchParams.get("category") || "all";
+    const period = searchParams.get("period") || "all";
+    const status = searchParams.get("status") || "all";
+    const filtered = receipts.filter(
+      (r) =>
+        r.merchant.toLowerCase().includes(q) &&
+        (category === "all" || r.category === category) &&
+        (period === "all" ||
+          r.receipt_date.startsWith(new Date().toISOString().slice(0, 7))) &&
+        (status === "all" ||
+          (status === "reviewed") === !!r.extracted_data?.reviewed),
+    );
+    if (format === "csv") {
+      const csv = generateCSV(filtered);
       return new NextResponse(csv, {
         headers: {
-          'Content-Type': 'text/csv',
-          'Content-Disposition': `attachment; filename="deduxis-receipts-${new Date().toISOString().split('T')[0]}.csv"`,
+          "Content-Type": "text/csv",
+          "Content-Disposition": `attachment; filename="deduxis-receipts-${new Date().toISOString().split("T")[0]}.csv"`,
         },
       });
     }
 
-    if (format === 'quickbooks') {
-      const qbCSV = generateQuickBooksCSV(receipts);
+    if (format === "quickbooks") {
+      const qbCSV = generateQuickBooksCSV(filtered);
       return new NextResponse(qbCSV, {
         headers: {
-          'Content-Type': 'text/csv',
-          'Content-Disposition': `attachment; filename="deduxis-quickbooks-${new Date().toISOString().split('T')[0]}.csv"`,
+          "Content-Type": "text/csv",
+          "Content-Disposition": `attachment; filename="deduxis-quickbooks-${new Date().toISOString().split("T")[0]}.csv"`,
         },
       });
     }
 
-    return NextResponse.json({ error: 'Invalid format' }, { status: 400 });
-  } catch (error: any) {
-    console.error('Export error:', error);
+    return NextResponse.json({ error: "Invalid format" }, { status: 400 });
+  } catch (error) {
+    console.error("Export error:", error);
     return NextResponse.json(
-      { error: error.message || 'Failed to export receipts' },
-      { status: 500 }
+      {
+        error:
+          (error instanceof Error ? error.message : String(error)) ||
+          "Failed to export receipts",
+      },
+      { status: 500 },
     );
   }
 }
 
-function generateCSV(receipts: any[]): string {
-  const headers = ['Date', 'Merchant', 'Category', 'Total', 'Tax', 'Payment Method', 'Notes'];
-  const rows = receipts.map(r => [
-    r.receipt_date,
-    escapeCsv(r.merchant),
-    escapeCsv(r.category),
-    `$${r.total_amount.toFixed(2)}`,
-    r.tax_amount ? `$${r.tax_amount.toFixed(2)}` : '',
-    escapeCsv(r.payment_method || ''),
-    escapeCsv(r.notes || ''),
-  ]);
+type Receipt = {
+  receipt_date: string;
+  merchant: string;
+  category: string;
+  total_amount: number | string;
+  tax_amount: number | string | null;
+  payment_method: string | null;
+  notes: string | null;
+};
 
-  return [headers, ...rows].map(row => row.join(',')).join('\n');
+// Postgres numeric can arrive as a string.
+function money(value: number | string | null): string {
+  const n = Number(value);
+  return Number.isFinite(n) ? n.toFixed(2) : "";
 }
 
-function generateQuickBooksCSV(receipts: any[]): string {
-  // QuickBooks IIF format approximation (simplified CSV)
-  const headers = ['Date', 'Vendor', 'Account', 'Amount', 'Memo'];
-  const rows = receipts.map(r => [
+function generateCSV(receipts: Receipt[]): string {
+  const headers = [
+    "Date",
+    "Merchant",
+    "Category",
+    "Total",
+    "Tax",
+    "Payment Method",
+    "Notes",
+  ];
+  const rows = receipts.map((r) => [
     r.receipt_date,
     escapeCsv(r.merchant),
     escapeCsv(r.category),
-    r.total_amount.toFixed(2),
-    escapeCsv(`${r.category} - ${r.merchant}${r.notes ? ' - ' + r.notes : ''}`),
+    `$${money(r.total_amount)}`,
+    r.tax_amount ? `$${money(r.tax_amount)}` : "",
+    escapeCsv(r.payment_method || ""),
+    escapeCsv(r.notes || ""),
   ]);
 
-  return [headers, ...rows].map(row => row.join(',')).join('\n');
+  return [headers, ...rows].map((row) => row.join(",")).join("\n");
+}
+
+function generateQuickBooksCSV(receipts: Receipt[]): string {
+  // QuickBooks IIF format approximation (simplified CSV)
+  const headers = ["Date", "Vendor", "Account", "Amount", "Memo"];
+  const rows = receipts.map((r) => [
+    r.receipt_date,
+    escapeCsv(r.merchant),
+    escapeCsv(r.category),
+    money(r.total_amount),
+    escapeCsv(`${r.category} - ${r.merchant}${r.notes ? " - " + r.notes : ""}`),
+  ]);
+
+  return [headers, ...rows].map((row) => row.join(",")).join("\n");
 }
 
 function escapeCsv(value: string): string {
-  if (!value) return '';
-  const escaped = value.replace(/"/g, '""');
-  return escaped.includes(',') || escaped.includes('"') || escaped.includes('\n')
+  if (!value) return "";
+  // Neutralize spreadsheet formulas (=, +, -, @) from receipt text.
+  const safe = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
+  const escaped = safe.replace(/"/g, '""');
+  return escaped.includes(",") ||
+    escaped.includes('"') ||
+    escaped.includes("\n")
     ? `"${escaped}"`
     : escaped;
 }

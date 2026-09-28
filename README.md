@@ -47,7 +47,7 @@ Visit http://localhost:3000
 ## Features
 
 - ✅ Magic link authentication (Supabase)
-- ✅ Cixy chat: expense/deduction expert (Muslim identity, "not a CPA" disclaimers)
+- ✅ Cixy chat: friendly, professional expense assistant with a neutral tone and "not a CPA" disclaimers
 - ✅ Receipt upload and vision extraction (Anthropic Claude)
 - ✅ Structured data: merchant, date, total, tax, line items, payment method (last 4 only)
 - ✅ Schedule C business category suggestions

@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { validatedReceipt, receiptImage } from '../lib/receipt-validation.ts';
+import { csvFor } from '../lib/receipts.ts';
+const receipt={merchant:'Shop',category:'Office supplies',date:'2026-09-26',total:'$1,024.50',tax:'0'};
+test('receipt amounts remain numeric and zero tax is retained',()=>{const result=validatedReceipt(receipt);assert.equal(result.total_amount,1024.5);assert.equal(result.tax_amount,0);});
+test('invalid calendar dates and nonfinite amounts cannot be saved',()=>{assert.throws(()=>validatedReceipt({...receipt,date:'2026-02-30'}));assert.throws(()=>validatedReceipt({...receipt,total:'Infinity'}));assert.throws(()=>validatedReceipt({...receipt,total:'-3'}));});
+test('a forged image media type does not pass upload validation',()=>{assert.throws(()=>receiptImage('data:image/png;base64,'+Buffer.from('not an image').toString('base64')));assert.throws(()=>receiptImage('data:image/svg+xml;base64,'+Buffer.from('<svg/>').toString('base64')));});
+test('oversized images are rejected',()=>{assert.throws(()=>receiptImage('data:image/jpeg;base64,'+Buffer.alloc(3*1024*1024+1,255).toString('base64')));});
+test('exports quote embedded delimiters and neutralize formula injection',()=>{const data=csvFor([{id:'1',merchant:'=HYPERLINK("https://example.com")',receipt_date:'2026-09-26',category:'Office supplies',total_amount:24,tax_amount:0,payment_method:null,notes:'first, second\nthird'}],'csv');assert.ok(data.includes('"\'=HYPERLINK(""https://example.com"")"'));assert.ok(data.includes('"first, second\nthird"'));assert.ok(data.includes('"0.00"'));});
