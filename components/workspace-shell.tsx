@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { ApixisWalletChip } from "./ApixisWalletChip";
 export function WorkspaceShell({
   children,
   demo = false,
@@ -85,7 +86,10 @@ export function WorkspaceShell({
           {demo ? (
             <span className="badge yellow">Demo workspace</span>
           ) : (
-            <Link href="/">Back to website ↗</Link>
+            <span style={{ display: "inline-flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+              <ApixisWalletChip next="/dashboard" />
+              <Link href="/">Back to website ↗</Link>
+            </span>
           )}
         </div>
         {demo && (

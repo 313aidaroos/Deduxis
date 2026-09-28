@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { ApixisWalletChip } from "@/components/ApixisWalletChip";
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   return (
@@ -27,6 +28,7 @@ export function SiteHeader() {
           </Link>
         </nav>
         <div className="nav-actions">
+          <ApixisWalletChip hideSignedOut />
           <Link className="sign-in" href="/login">
             Sign in
           </Link>

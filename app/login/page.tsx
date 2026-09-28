@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { magicLink, passwordSignIn } from "./actions";
 import { AuthScreen } from "@/components/auth-screen";
+import { SignInWithApixis } from "@/components/SignInWithApixis";
 function LoginInner() {
   const params = useSearchParams();
   const raw = params.get("next") || "/dashboard";
@@ -36,6 +37,7 @@ function LoginInner() {
         Sign in to organize your receipts. New here? An email link creates your
         account.
       </p>
+      <SignInWithApixis />
       <div className="auth-tabs" role="tablist" aria-label="Sign-in method">
         <button
           role="tab"

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { SiteHeader, SiteFooter } from "@/components/site-header";
+import { ApixisWalletChip } from "@/components/ApixisWalletChip";
 
 import { useState, useRef } from "react";
 
@@ -90,6 +91,7 @@ export default function Pricing() {
             </div>
             <p className="price-note">per month · ${USD_PRICE} equivalent</p>
             <p className="price-note">200 receipts per seat period</p>
+            <p className="price-note">Your Apixis Wallet: <ApixisWalletChip /></p>
             <Link href="/demo" className="text-link">
               Explore before you begin →
             </Link>
