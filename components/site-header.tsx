@@ -61,6 +61,7 @@ export function SiteFooter() {
         <Link href="/#faq">Questions & answers</Link>
         <Link href="/pricing">Pricing</Link>
         <Link href="/chat">Ask Cixy</Link>
+        <Link href="/support">Support</Link>
       </nav>
       <p>
         Organize with confidence. Confirm filing decisions with your tax
