@@ -36,3 +36,7 @@ Entry format:
 - Changed: `app/api/redeem/route.ts` bills the Apixis ID `sub` first (`apixisOwner`), verified email only as fallback.
 - Changed: `components/ApixisWalletChip.tsx` reads the current path with `useSyncExternalStore` (lint error `react-hooks/set-state-in-effect` made CI red); `app/support/page.tsx` escaped two apostrophes (lint errors).
 - Why: family backend pass per Awad's 2026-09-30 decisions (ApixisWallet/AGENTS.md §0c D11–D16; live board: ApixisWallet/docs/FAMILY_STATUS.md). One SDK, one login kit, one world kit — copied from canonical, never patched by hand.
+
+## 2026-09-30 (night pass) — Claude
+- Changed: Cixy prompt now starts with the shared family core from `lib/apixis-cixy` (copied from `ApixisWallet/sdk/apixis-cixy`); only the product role stays site-specific. Greeting policy is the family rule (match the person, never open with salaam). Provider failures (no key, out of credit, 429, 5xx) answer `cixyUnavailableReply()` — a calm sentence with HTTP 503/429, never the vendor error.
+- Why: Awad's overnight instruction — all backend and security done, one Cixy persona everywhere (ApixisWallet/docs/CIXY.md, sdk/apixis-cixy.*), agents on the same page (ApixisWallet/docs/FAMILY_STATUS.md).
