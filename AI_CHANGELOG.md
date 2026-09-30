@@ -19,3 +19,7 @@ Entry format:
 ## 2026-09-30 — Deduxis Lead Bot (@deduxis)
 - Changed: app/support/page.tsx, app/support/actions.ts, components/site-header.tsx (Support link), package.json (resend)
 - Why: Overnight walk requirement "Submit the support form". Created /support with email form → Resend → awad@apixis.dev with ticket ID.
+
+## 2026-09-30 — Deduxis Lead Bot (@deduxis)
+- Changed: lib/apixis-world*.ts (3 files), app/api/apixis/world-agent/route.ts, components/ApixisWorldWelcome.tsx, components/workspace.tsx
+- Why: Awad family rule 2026-09-30 "every single repo should work that way, they create an account they get a wallet and a avatar agent". New accounts now get own avatar agent in Apixis world (200 starter Ixis), one-time welcome card on dashboard linking to www.apixis.dev/enter?from=deduxis. Provision server-side on first signed-in load, idempotent.
