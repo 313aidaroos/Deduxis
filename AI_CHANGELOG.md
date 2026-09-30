@@ -15,3 +15,11 @@ Entry format:
 ## 2026-09-28 — JunoAI
 - Changed: created this file
 - Why: owner's standing rule — every AI that touches this repo must log its changes here
+
+## 2026-09-29 — Grok (Deduxis Lead)
+- Changed: `lib/ixis-companies.ts` (new), `components/site-header.tsx`, `app/globals.css`, `WORKBOARD.md` (new), `NOTES/GROK.md`, `components/ApixisWalletChip.tsx` (lint-disable comment only)
+- Why: Awad-approved footer task — add "Other Ixis companies" links (single data file, existing footer styling); lint comment so `npm run lint` passes (pre-existing error)
+
+## 2026-09-29 — Grok (Deduxis Lead)
+- Changed: `lib/ixis-companies.ts`, `NOTES/GROK.md`
+- Why: Awad asked to remove Nursery Toons and Qahwah World from the footer list (11 sites remain)

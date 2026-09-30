@@ -537,6 +537,16 @@ img {
   gap: 23px;
   font-size: 11px;
 }
+.site-footer .ixis-companies {
+  width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  row-gap: 10px;
+}
+.site-footer .ixis-companies .family {
+  border-left: 0;
+  padding-left: 0;
+}
 .site-footer > p {
   width: 100%;
   font-size: 10px;

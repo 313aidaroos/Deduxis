@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ApixisWalletChip } from "@/components/ApixisWalletChip";
+import { IXIS_COMPANIES } from "@/lib/ixis-companies";
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   return (
@@ -61,6 +62,19 @@ export function SiteFooter() {
         <Link href="/#faq">Questions & answers</Link>
         <Link href="/pricing">Pricing</Link>
         <Link href="/chat">Ask Cixy</Link>
+      </nav>
+      <nav className="ixis-companies" aria-label="Other Ixis companies">
+        <span className="family">Other Ixis companies</span>
+        {IXIS_COMPANIES.map((company) => (
+          <a
+            key={company.url}
+            href={company.url}
+            target="_blank"
+            rel="noopener"
+          >
+            {company.name}
+          </a>
+        ))}
       </nav>
       <p>
         Organize with confidence. Confirm filing decisions with your tax
