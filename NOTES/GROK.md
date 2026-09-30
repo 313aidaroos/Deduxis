@@ -1,5 +1,13 @@
 Grok Bot (Developer Bot hub + product leads) notes. Every change Grok Bot makes to this product (code, env, database, deploys) gets a dated entry here so Claude, Hermes and Codex stay on the same page.
 
+## 2026-09-29 (CT) — Footer "Other Ixis companies" links (Grok / Deduxis Lead)
+- **Who:** Grok / Deduxis Lead, approved by Awad via Developer Bot (one-time exception to the credit pause).
+- **What:** Added an "Other Ixis companies" row to the site footer: 13 plain text links (Deduxis itself excluded; no Nexxis/Omnixis, Launchixis, PersonalContentBot, AwadBot or COMMAND), each `target="_blank" rel="noopener"`, wrapping on mobile. Existing "Part of the Apixis family" text kept. Styling reuses the footer's existing `nav` link styles and the `.family` muted label.
+- **Files:** `lib/ixis-companies.ts` (new, single list of names + URLs), `components/site-header.tsx` (`SiteFooter` block), `app/globals.css` (one scoped `.site-footer .ixis-companies` rule for full-width wrap), `WORKBOARD.md` (new), `AI_CHANGELOG.md`, this file.
+- **Lint:** `npm run lint` already failed on main (`react-hooks/set-state-in-effect` in `components/ApixisWalletChip.tsx`); added a one-line `eslint-disable-next-line` there, no behavior change.
+- **Branch/PR:** `deduxis/ixis-footer-links`, not merged, not deployed to production.
+- **Undo:** revert the PR commit, or delete `lib/ixis-companies.ts` plus the `ixis-companies` nav block in `components/site-header.tsx` and its CSS rule in `app/globals.css`.
+
 ## 2026-09-27 (CT) — Developer Bot (hub)
 - Wallet registration: added `deduxis` to `wallet_api_clients` in Supabase project `kzneeksminozmhnqaaun`, with `require_sso=false`.
 - Callback URLs registered: https://deduxis.vercel.app/auth/apixis/callback.

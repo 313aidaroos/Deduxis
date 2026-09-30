@@ -71,6 +71,8 @@ export function ApixisWalletChip({ className, next, hideSignedOut = false }: { c
   const wallet = useApixisWallet();
   const [here, setHere] = useState("/");
   useEffect(() => {
+    // Pre-existing: reads window after mount to avoid a hydration mismatch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHere(window.location.pathname + window.location.search);
   }, []);
   const signIn = `/auth/apixis/start?next=${encodeURIComponent(next ?? here)}`;
