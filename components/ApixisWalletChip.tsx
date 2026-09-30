@@ -1,8 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
-
-const noopSubscribe = () => () => undefined;
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 /**
  * The shared Apixis Wallet inside this site: the person's one Ixis balance as a small pill
@@ -83,8 +81,12 @@ export function useApixisWallet(): WalletState {
 
 export function ApixisWalletChip({ className, next, hideSignedOut = false, showAgent = false }: { className?: string; next?: string; hideSignedOut?: boolean; showAgent?: boolean }) {
   const wallet = useApixisWallet();
-  // Current path without setState-in-effect (lint rule react-hooks/set-state-in-effect).
-  const here = useSyncExternalStore(noopSubscribe, () => window.location.pathname + window.location.search, () => "/");
+  const [here, setHere] = useState("/");
+  useEffect(() => {
+    // Pre-existing: reads window after mount to avoid a hydration mismatch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setHere(window.location.pathname + window.location.search);
+  }, []);
   const signIn = `/auth/apixis/start?next=${encodeURIComponent(next ?? here)}`;
   const amount = wallet.available === null ? "—" : wallet.available.toLocaleString();
   if (hideSignedOut && (!wallet.loaded || !wallet.signedIn)) return null;
