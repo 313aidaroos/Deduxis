@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import type { User } from "@supabase/supabase-js";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { entitlements, type Entitlement } from "@/lib/apixis-wallet";
+import { apixisSubOf } from "@/lib/apixis-login";
 
 export const SEAT_PRODUCT = "deduxis.receipts.monthly";
 
@@ -59,7 +60,8 @@ export async function guard(opts: {
   if (opts.seat) {
     let owned: Entitlement[];
     try {
-      owned = await entitlements(user.email, "deduxis");
+      // 2026-09-29 (Grok / Deduxis Lead): same owner as redeem (Apixis ID sub when linked).
+      owned = await entitlements(apixisSubOf(user) ?? user.email, "deduxis");
     } catch {
       return {
         ok: false,

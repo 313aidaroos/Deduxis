@@ -3,12 +3,16 @@ import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 import { buyIxisUrl, walletBalance, WalletError } from "@/lib/apixis-wallet";
 import { apixisSubOf } from "@/lib/apixis-login";
+import { enterApixisUrl } from "@/lib/apixis-world";
+import { ensureDeduxisWorldAgent } from "@/lib/world-agent-server";
 
 export const dynamic = "force-dynamic";
 
 /**
  * The signed-in person's ONE Apixis Wallet balance (shared by every Apixis site), plus the
  * "Buy Ixis" link that goes to the Wallet and comes straight back here.
+ * Also (2026-09-29, Grok / Deduxis Lead): on the first signed-in load, make sure this Apixis ID has
+ * its one Apixis world agent (idempotent; recorded in app_metadata) and return `world`.
  */
 export async function GET(request: Request) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -22,13 +26,15 @@ export async function GET(request: Request) {
   const { data } = await supabase.auth.getUser();
   const user = data.user;
   if (!user) return NextResponse.json({ available: null, buy, signIn: true }, { status: 401 });
+  const agent = await ensureDeduxisWorldAgent(user);
+  const world = { ...agent, enterUrl: enterApixisUrl("deduxis") };
   const owner = apixisSubOf(user) ?? user.email ?? null;
-  if (!owner) return NextResponse.json({ available: null, buy, linked: false });
+  if (!owner) return NextResponse.json({ available: null, buy, linked: false, world });
   try {
     const balance = await walletBalance(owner, { history: 10 });
-    return NextResponse.json({ ...balance, buy, linked: Boolean(apixisSubOf(user)) }, { headers: { "cache-control": "no-store" } });
+    return NextResponse.json({ ...balance, buy, linked: Boolean(apixisSubOf(user)), world }, { headers: { "cache-control": "no-store" } });
   } catch (error) {
     const signInWithApixis = error instanceof WalletError && (error.status === 403 || error.status === 404);
-    return NextResponse.json({ available: null, buy, signInWithApixis }, { status: signInWithApixis ? 200 : 503 });
+    return NextResponse.json({ available: null, buy, signInWithApixis, world }, { status: signInWithApixis ? 200 : 503 });
   }
 }

@@ -87,7 +87,7 @@ export function WorkspaceShell({
             <span className="badge yellow">Demo workspace</span>
           ) : (
             <span style={{ display: "inline-flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-              <ApixisWalletChip next="/dashboard" />
+              <ApixisWalletChip next="/dashboard" showAgent />
               <Link href="/">Back to website ↗</Link>
             </span>
           )}

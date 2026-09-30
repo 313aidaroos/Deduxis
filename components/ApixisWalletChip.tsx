@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
+
+const noopSubscribe = () => () => undefined;
 
 /**
  * The shared Apixis Wallet inside this site: the person's one Ixis balance as a small pill
@@ -11,16 +13,27 @@ import { useEffect, useState, useSyncExternalStore } from "react";
  * tab regains focus / becomes visible and on pageshow (back/forward cache), so the number updates
  * right after a purchase on Apixis Wallet sends the person back. Never shows a made-up number.
  * Updated 2026-09-27 (Grok, balance pill).
+ * Updated 2026-09-29 (Grok / Deduxis Lead): "Log in with Apixis ID" wording; `showAgent` adds the
+ * "Your agent is in the Apixis world" link once the route reports the agent is provisioned.
  */
 
-type WalletState = { available: number | null; buy: string | null; linked: boolean; signedIn: boolean; loaded: boolean };
+type WorldAgent = { ready: boolean; agentId: string | null; enterUrl: string };
+type WalletState = { available: number | null; buy: string | null; linked: boolean; signedIn: boolean; loaded: boolean; world: WorldAgent | null };
 
-const INITIAL: WalletState = { available: null, buy: null, linked: false, signedIn: false, loaded: false };
+const INITIAL: WalletState = { available: null, buy: null, linked: false, signedIn: false, loaded: false, world: null };
 const FALLBACK_BUY = "https://apixis-wallet.vercel.app/buy?product=deduxis";
 let current: WalletState = INITIAL;
 let inFlight = false;
 let started = false;
 const listeners = new Set<() => void>();
+
+function worldOf(raw: unknown): WorldAgent | null {
+  if (!raw || typeof raw !== "object") return null;
+  const w = raw as Record<string, unknown>;
+  const enterUrl = typeof w.enterUrl === "string" && w.enterUrl.startsWith("https://www.apixis.dev/") ? w.enterUrl : null;
+  if (!enterUrl) return null;
+  return { ready: w.ready === true, agentId: typeof w.agentId === "string" ? w.agentId : null, enterUrl };
+}
 
 function load() {
   if (inFlight) return;
@@ -35,6 +48,7 @@ function load() {
         linked: d.linked === true,
         signedIn: status !== 401,
         loaded: true,
+        world: worldOf(d.world) ?? current.world,
       };
       listeners.forEach((listener) => listener());
     })
@@ -67,12 +81,10 @@ export function useApixisWallet(): WalletState {
   return useSyncExternalStore(subscribe, () => current, () => INITIAL);
 }
 
-export function ApixisWalletChip({ className, next, hideSignedOut = false }: { className?: string; next?: string; hideSignedOut?: boolean }) {
+export function ApixisWalletChip({ className, next, hideSignedOut = false, showAgent = false }: { className?: string; next?: string; hideSignedOut?: boolean; showAgent?: boolean }) {
   const wallet = useApixisWallet();
-  const [here, setHere] = useState("/");
-  useEffect(() => {
-    setHere(window.location.pathname + window.location.search);
-  }, []);
+  // Current path without setState-in-effect (lint rule react-hooks/set-state-in-effect).
+  const here = useSyncExternalStore(noopSubscribe, () => window.location.pathname + window.location.search, () => "/");
   const signIn = `/auth/apixis/start?next=${encodeURIComponent(next ?? here)}`;
   const amount = wallet.available === null ? "—" : wallet.available.toLocaleString();
   if (hideSignedOut && (!wallet.loaded || !wallet.signedIn)) return null;
@@ -103,7 +115,12 @@ export function ApixisWalletChip({ className, next, hideSignedOut = false }: { c
       </a>
       {wallet.loaded && (!wallet.signedIn || !wallet.linked) && (
         <a className="apx-wallet-signin" href={signIn} style={{ color: "inherit", fontSize: 11, textDecoration: "underline", whiteSpace: "nowrap", opacity: 0.85 }}>
-          Sign in with Apixis
+          Log in with Apixis ID
+        </a>
+      )}
+      {showAgent && wallet.signedIn && wallet.world?.ready && (
+        <a className="apx-world-agent" href={wallet.world.enterUrl} data-agent-id={wallet.world.agentId ?? undefined} style={{ color: "inherit", fontSize: 11, textDecoration: "underline", whiteSpace: "nowrap" }}>
+          Your agent is in the Apixis world ↗
         </a>
       )}
     </span>

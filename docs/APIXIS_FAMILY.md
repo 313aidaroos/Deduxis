@@ -13,11 +13,13 @@ Lead developer: Claude (backend). Owner: Awad. The source of truth for the whole
 |---|---|
 | Sign in with Apixis | `/auth/apixis/start?next=…` → Wallet → `/auth/apixis/callback`, plus the button in `components/SignInWithApixis.tsx` on the login page |
 | Shared balance + Buy Ixis link | `GET /api/wallet/balance` (the person's one Wallet balance, plus a `buy` URL that returns here) and `components/ApixisWalletChip.tsx` |
+| One world agent (2026-09-29) | `GET /api/wallet/balance` calls `lib/world-agent-server.ts` on the first signed-in load: Apixis.dev `POST /api/agent/provision` with `APIXIS_WORLD_KEY` (idempotent), stored on the Supabase auth user as `app_metadata.apixis_world_agent_id` / `_at` / `_name` (no table). The workspace top line shows "Your agent is in the Apixis world" → `https://www.apixis.dev/enter?from=deduxis`. `lib/apixis-world*.ts` are copies of Apixis.dev `sdk/`. |
 | Buy Ixis | `buyIxisUrl("<app>", returnUrl)`. The Wallet sells the pack, then sends the person back here with the Ixis. The return host must be on the Wallet allowlist. |
 
 ## Env (Vercel, this site)
 - `WALLET_API_KEY`: this site's own `apx_live_…` key (from the Wallet lead)
 - `APIXIS_CLIENT_ID`: this site's Apixis ID client name
+- `APIXIS_WORLD_KEY`: this site's Apixis world key (from Developer Bot; never mint one here)
 - `APIXIS_WALLET_API_URL=https://apixis-wallet.vercel.app`
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (or `_PUBLISHABLE_KEY`)
 - `SUPABASE_SERVICE_ROLE_KEY` (server only; needed to create the session after Apixis sign-in)

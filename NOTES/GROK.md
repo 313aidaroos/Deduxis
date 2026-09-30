@@ -13,3 +13,11 @@ Grok Bot (Developer Bot hub + product leads) notes. Every change Grok Bot makes 
 - **Merge SHA:** 84dbc7f. Prod READY; `/api/wallet/balance` → 401 `{signIn:true}` without a session.
 - **Undo:** `git revert -m 1 84dbc7f` (or revert PR #1 in GitHub).
 - No Wallet code, env/keys, Stripe, checkout or payment links changed.
+
+## 2026-09-29 (CT) — One Apixis ID = one Wallet = one world agent (Grok / Deduxis Lead)
+- **Who:** Grok / Deduxis Lead. Approved by Awad via Developer Bot (brief /workspace/audit/one-account-brief.md).
+- **What:** On the first signed-in load, `GET /api/wallet/balance` calls `ensureDeduxisWorldAgent` → Apixis.dev `POST https://www.apixis.dev/api/agent/provision` (Bearer `APIXIS_WORLD_KEY`, `from: "deduxis"`, verified email + `apixis_sub`). It is idempotent on both sides: the local flag `app_metadata.apixis_world_agent_at` skips later calls, and Apixis.dev keeps one agent per email / Apixis ID and grants the 200 starter Ixis once. It stores `apixis_world_agent_id` / `_at` / `_name` on the Supabase **auth user app_metadata** (same keys as Renoxis), so no table or migration is needed. The workspace top line shows "Your agent is in the Apixis world ↗" (→ `/enter?from=deduxis`). The login page's primary button is now "Log in with Apixis ID". Redeem and seat lookups use the Apixis ID `sub` when linked (APIXIS_FAMILY rule 3). Also fixed the lint error that already existed in ApixisWalletChip.
+- **Where:** branch `grok/deduxis-one-account` (PR supersedes #1's SSO scope; #1 was already merged). Files are listed in AI_CHANGELOG.md.
+- **Supabase:** nothing applied. `list_tables` shows public still has 0 tables (supabase/schema.sql is still unapplied, and this change doesn't depend on it).
+- **Env:** `APIXIS_WORLD_KEY` is **missing** on Vercel `deduxis`. It was not minted, and until Developer Bot sets it provisioning logs `apixis_world_key_missing` and retries on the next load.
+- **Undo:** revert the PR merge commit (or close the PR). Stored metadata can stay; it's inert. To clear it, remove the `apixis_world_agent_*` keys from auth users' app_metadata.

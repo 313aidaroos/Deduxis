@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { redeem, buyIxisUrl, WalletError } from "@/lib/apixis-wallet";
+import { apixisSubOf } from "@/lib/apixis-login";
 
 export async function POST(req: NextRequest) {
   try {
@@ -29,7 +30,8 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await redeem({
-      ownerEmail: user.email,
+      // 2026-09-29 (Grok / Deduxis Lead): the Apixis ID sub pays when linked (docs/APIXIS_FAMILY.md rule 3).
+      owner: apixisSubOf(user) ?? user.email,
       productKey: "deduxis.receipts.monthly",
       idempotencyKey,
       provision: async (reservation) => {
