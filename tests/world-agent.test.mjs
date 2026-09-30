@@ -32,6 +32,12 @@ test('failed provision leaves the flag unset (retry next load) and never throws'
   assert.equal(view2.ready, false);
 });
 
+test('no local Ixis grant: the stored metadata only records the agent, never a balance', async () => {
+  const saved = [];
+  await ensureWorldAgent(base, { provision: async () => ({ ok: true, created: true, agent: { id: 'a1', name: 'A' } }), saveAppMetadata: async (_id, m) => { saved.push(m); } });
+  assert.deepEqual(Object.keys(saved[0]).filter((k) => /balance|grant|starter|^ixis/i.test(k)), []);
+});
+
 test('unverified emails are not provisioned', () => {
   const u = { id: 'u2', email: 'x@y.co', email_confirmed_at: null, app_metadata: {} };
   assert.equal(hasVerifiedEmail(u), false);

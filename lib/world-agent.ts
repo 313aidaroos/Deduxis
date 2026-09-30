@@ -4,7 +4,7 @@
  *
  * On first sign-in (any verified account without the flag) the server asks Apixis.dev
  * POST /api/agent/provision to create or reuse this person's world agent (default Apixis body,
- * 200 starter Ixis once). The result is recorded on the Supabase auth user
+ * 1000 starter Ixis once, granted by Apixis.dev itself; Deduxis never grants Ixis locally). The result is recorded on the Supabase auth user
  * (app_metadata.apixis_world_agent_at / _id / _name), so later loads skip the call. Apixis.dev is
  * idempotent by verified email / Apixis ID, so a retry never creates a second agent or grant.
  * No database table needed. Pure logic (unit-tested); wiring in lib/world-agent-server.ts.
