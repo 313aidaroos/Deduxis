@@ -15,3 +15,7 @@ Entry format:
 ## 2026-09-28 — JunoAI
 - Changed: created this file
 - Why: owner's standing rule — every AI that touches this repo must log its changes here
+
+## 2026-09-30 — Deduxis Lead Bot (@deduxis)
+- Changed: app/support/page.tsx, app/support/actions.ts, components/site-header.tsx (Support link), package.json (resend)
+- Why: Overnight walk requirement "Submit the support form". Created /support with email form → Resend → awad@apixis.dev with ticket ID.
