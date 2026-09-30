@@ -1,5 +1,8 @@
 Grok Bot (Developer Bot hub + product leads) notes. Every change Grok Bot makes to this product (code, env, database, deploys) gets a dated entry here so Claude, Hermes and Codex stay on the same page.
 
+## 2026-09-29 (CT) — Footer list trimmed to 11 (Grok / Deduxis Lead)
+- Per Awad (via Developer Bot) on PR #10: removed Nursery Toons and Qahwah World from `lib/ixis-companies.ts`. Undo: re-add the two entries.
+
 ## 2026-09-29 (CT) — Footer "Other Ixis companies" links (Grok / Deduxis Lead)
 - **Who:** Grok / Deduxis Lead, approved by Awad via Developer Bot (one-time exception to the credit pause).
 - **What:** Added an "Other Ixis companies" row to the site footer: 13 plain text links (Deduxis itself excluded; no Nexxis/Omnixis, Launchixis, PersonalContentBot, AwadBot or COMMAND), each `target="_blank" rel="noopener"`, wrapping on mobile. Existing "Part of the Apixis family" text kept. Styling reuses the footer's existing `nav` link styles and the `.family` muted label.
