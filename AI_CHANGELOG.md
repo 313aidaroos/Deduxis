@@ -29,3 +29,10 @@ Entry format:
 
 - Copied the canonical ApixisWallet local-redirect validator and used it at login start and callback. Preserved this app’s existing Supabase adapter and routes.
 - Added regression cases for external URLs, backslashes, encoded separators/control characters and normal return destinations. No design changes.
+
+## 2026-09-30 — Claude (branch claude/awesome-newton-3tygzi)
+- Changed: `lib/apixis-login.ts` re-copied from `ApixisWallet/sdk/apixis-login-next.ts` — `verifyOtp({ type: "email" })` (D16: new addresses get a `signup` token that `magiclink` rejects). `lib/apixis-wallet.ts` → SDK v3.1 (adds `marketplaceOrder`/`marketplaceSettle`). `lib/apixis-world*.ts` re-synced with Apixis.dev (15 clients incl. ominix, wattixis; 1,000 starter Ixis, D11).
+- Changed: `app/auth/callback/route.ts` verifies `token_hash` as type `email` (first sign-in for a new address failed before).
+- Changed: `app/api/redeem/route.ts` bills the Apixis ID `sub` first (`apixisOwner`), verified email only as fallback.
+- Changed: `components/ApixisWalletChip.tsx` reads the current path with `useSyncExternalStore` (lint error `react-hooks/set-state-in-effect` made CI red); `app/support/page.tsx` escaped two apostrophes (lint errors).
+- Why: family backend pass per Awad's 2026-09-30 decisions (ApixisWallet/AGENTS.md §0c D11–D16; live board: ApixisWallet/docs/FAMILY_STATUS.md). One SDK, one login kit, one world kit — copied from canonical, never patched by hand.

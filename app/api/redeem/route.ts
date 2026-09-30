@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { redeem, buyIxisUrl, WalletError } from "@/lib/apixis-wallet";
+import { apixisOwner } from "@/lib/apixis-login";
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,8 +29,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Billing identity: Apixis ID `sub` when they signed in with Apixis, else the verified email.
+    const owner = (await apixisOwner(user.email)) ?? user.email;
+
     const result = await redeem({
-      ownerEmail: user.email,
+      owner,
       productKey: "deduxis.receipts.monthly",
       idempotencyKey,
       provision: async (reservation) => {

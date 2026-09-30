@@ -30,7 +30,7 @@ export default function SupportPage() {
           Support
         </h1>
         <p style={{ marginBottom: "2rem", lineHeight: 1.6 }}>
-          Need help with Deduxis? Send us a message and we'll get back to you soon.
+          Need help with Deduxis? Send us a message and we&apos;ll get back to you soon.
         </p>
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
@@ -110,7 +110,7 @@ export default function SupportPage() {
             >
               {result.success ? (
                 <>
-                  <strong>Message sent!</strong> Ticket ID: {result.id}. We'll respond soon.
+                  <strong>Message sent!</strong> Ticket ID: {result.id}. We&apos;ll respond soon.
                 </>
               ) : (
                 <>
