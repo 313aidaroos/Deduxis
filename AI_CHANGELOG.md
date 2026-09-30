@@ -23,3 +23,9 @@ Entry format:
 ## 2026-09-30 — Deduxis Lead Bot (@deduxis)
 - Changed: lib/apixis-world*.ts (3 files), app/api/apixis/world-agent/route.ts, components/ApixisWorldWelcome.tsx, components/workspace.tsx
 - Why: Awad family rule 2026-09-30 "every single repo should work that way, they create an account they get a wallet and a avatar agent". New accounts now get own avatar agent in Apixis world (200 starter Ixis), one-time welcome card on dashboard linking to www.apixis.dev/enter?from=deduxis. Provision server-side on first signed-in load, idempotent.
+
+
+## 2026-09-30 — Codex — Tester readiness: shared-login redirects
+
+- Copied the canonical ApixisWallet local-redirect validator and used it at login start and callback. Preserved this app’s existing Supabase adapter and routes.
+- Added regression cases for external URLs, backslashes, encoded separators/control characters and normal return destinations. No design changes.
