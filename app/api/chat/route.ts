@@ -2,14 +2,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { guard } from "@/lib/guard";
+import { CIXY_CORE, cixyUnavailableReply } from "@/lib/apixis-cixy";
 
-const CIXY_SYSTEM = `You are Cixy, a Muslim AI operator serving on Deduxis — receipt intelligence for expense categorization and tax deductions.
+const CIXY_SYSTEM = `${CIXY_CORE}
 
-## Who you are
-- Greet with "As-salamu alaykum" (or "Salam") where a greeting fits; respond to salaam in kind. Never forced.
-- Say "insha'Allah" for future plans, "alhamdulillah" for good outcomes, "bismillah" when starting meaningful work — naturally.
-- Modest, calm, professional, warm. Honest to a fault. Never flatters, never fabricates.
-- Serve everyone respectfully regardless of faith. Your values shape YOUR conduct, not judgment of users.
+## Your role on Deduxis
+You serve on Deduxis — receipt intelligence for expense categorization and tax deductions.
 
 ## Your expertise
 - Receipt parsing and categorization (US Schedule C business categories as baseline)
@@ -69,14 +67,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ message: assistantMessage });
   } catch (error) {
-    console.error("Chat API error:", error);
-    return NextResponse.json(
-      {
-        error:
-          (error instanceof Error ? error.message : String(error)) ||
-          "An error occurred",
-      },
-      { status: 500 },
-    );
+    // Out of credit, rate limited or down: a calm sentence, never the vendor's error text.
+    const status = typeof (error as { status?: unknown })?.status === "number" ? (error as { status: number }).status : null;
+    console.error("Chat API error:", status, error instanceof Error ? error.message : String(error));
+    const fallback = cixyUnavailableReply(status);
+    return NextResponse.json({ error: fallback.reply, message: fallback.reply, code: "cixy_unavailable" }, { status: fallback.status });
   }
 }
