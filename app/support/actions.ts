@@ -2,8 +2,6 @@
 import { Resend } from "resend";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function submitSupport(formData: FormData) {
   try {
     const email = formData.get("email") as string;
@@ -20,6 +18,12 @@ export async function submitSupport(formData: FormData) {
     const userContext = user ? `\n\nUser: ${user.email} (${user.id})` : "\n\nUser: Not signed in";
 
     const ticketId = `dedux-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+    // Email is optional until RESEND_API_KEY is set; never crash the page without it.
+    if (!process.env.RESEND_API_KEY) {
+      return { success: false, error: "Support email isn't set up yet. Please try again later." };
+    }
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     // Send email to support
     const { error } = await resend.emails.send({
