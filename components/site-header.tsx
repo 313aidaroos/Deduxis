@@ -20,7 +20,7 @@ export function SiteHeader() {
           <Link onClick={() => setOpen(false)} href="/#features">
             Features
           </Link>
-          <Link onClick={() => setOpen(false)} href="/companies">Companies</Link>
+          <Link onClick={() => setOpen(false)} href="/companies">Apixis Companies</Link>
           <Link onClick={() => setOpen(false)} href="/pricing">
             Pricing
           </Link>
