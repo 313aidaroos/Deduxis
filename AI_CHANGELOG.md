@@ -44,3 +44,7 @@ Entry format:
 ## 2026-10-01 (early) — Claude
 - Changed: `.github/workflows/ci.yml` — this repo had no CI on `main` (the shared-CI PR was never merged); it now calls `313aidaroos/github-actions/node-ci` on push/PR. `typecheck` script added where missing so CI type-checks (verified 0 errors, build green).
 - Why: overnight second pass — every repo must prove itself on every push.
+
+## 2026-10-02 — Claude (Claude Code)
+- Changed: applied `supabase/migrations/20261002_receipts_foundation.sql` live (Supabase uxgtppwqonbznuoyebbb): `receipts`, `category_overrides` (owner-only RLS) and a private `receipts` storage bucket with per-user folder policies.
+- Why: the live project had none of them, so receipt upload, list and export would fail for every user. No code changed.
