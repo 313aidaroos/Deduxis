@@ -49,3 +49,7 @@ Entry format:
 - Changed: applied `supabase/migrations/20261002_receipts_foundation.sql` live (Supabase uxgtppwqonbznuoyebbb): `receipts`, `category_overrides` (owner-only RLS) and a private `receipts` storage bucket with per-user folder policies.
 - Why: the live project had none of them, so receipt upload, list and export would fail for every user. No code changed.
 - Changed (same day): `app/support/actions.ts` builds the Resend client only when `RESEND_API_KEY` exists. Before, a missing key threw when the module loaded and broke the support page.
+
+## 2026-10-02 — Claude (Claude Code)
+- Changed: `.env.example` now lists every env var the code reads (missing names appended with a one-line note each).
+- Why: so the owner can add keys in Vercel from one complete list. No code changed.
