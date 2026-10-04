@@ -133,3 +133,11 @@ _Backfill by Grok (Deduxis Lead) on 2026-10-02 per Awad's standing rule (every c
 - Repo FROZEN. Open PRs: #10 only (conflicting, awaiting Awad). Latest prod: dpl_JAaipdoMaUkDdZBYcGbxfrWqDGdX on 3d39bd8.
 - Vercel env changes seen since the 2026-09-27 hub entry: `APIXIS_WORLD_KEY`, `APIXIS_WORLD_API` (Sep 29 23:16). `NEXT_PUBLIC_APP_URL` (Sep 27 22:15) logged above. No other env var has a created/updated date after Sep 27 22:35.
 - Unknown: which agent made 75cf721 (Sep 27); Vercel metadata does not show deleted env vars, so env deletions (if any) can't be determined from it.
+
+## 2026-10-04 (CT) — Grok Bot: Feed tab on Deduxis (PR open, NOT merged)
+- Why: Awad asked for the Socixis Social family feed as a Feed tab on every Ixis site. Awad put feed changes on hold, so this PR is for preview review only; do not merge until Awad says so.
+- What: new public `/feed` page in Deduxis's own shell (same header, footer, fonts, colors and buttons). For You is the unfiltered mixed feed from every Apixis company with source-site badges and AI labels; Following, Search · Trending and You tabs; video/photo/text posts, like, comment, follow, save, share, report, tips and boosts in Ixis. Signed-out visitors can browse; the 4th tab says "You" and shows a sign-in card (Apixis ID). Text-only posts use the site's body font, wrap long words and size to their content; media posts keep the full-height layout; feed modals sit above everything.
+- Where: `app/feed/` (page with SiteHeader/SiteFooter, Deduxis skin, `feed.css` mapped to Deduxis tokens), `feed-client/` (shared client), `app/api/feed-session/route.ts`, "Feed" link in `components/site-header.tsx`, lint override scoped to `feed-client/**` in `eslint.config.mjs` (React Compiler rules; same as Renoxis).
+- Backend: https://www.apixis.dev/api/feed. `/api/feed-session` calls POST /api/feed/session server-side with the existing `APIXIS_WORLD_KEY` + X-Apixis-Client/Sub/Email and returns the short-lived fdt_ token. No new env vars, no DB change, no SVGs.
+- Who: Grok Bot (for Awad).
+- Undo: close this PR, or `git revert <squash sha>` if it is ever merged.
