@@ -35,14 +35,16 @@ export async function POST(req: NextRequest) {
   try {
     // Don't pay for an AI scan the seat can't save: stop at the monthly receipt cap.
     const periodStart = seatPeriodStart(access.seat?.renews_at ?? null);
-    const overCap = quotaResponse(
-      await receiptsUsed(
-        await createServerSupabaseClient(),
-        access.user.id,
-        periodStart,
-      ),
-      periodStart,
-    );
+    const overCap = access.owner
+      ? null
+      : quotaResponse(
+          await receiptsUsed(
+            await createServerSupabaseClient(),
+            access.user.id,
+            periodStart,
+          ),
+          periodStart,
+        );
     if (overCap) return overCap;
 
     const apiKey = process.env.ANTHROPIC_API_KEY;
