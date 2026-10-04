@@ -165,3 +165,20 @@ The entries below record the day's observed commits and merged PRs. Existing det
 
 ### Merged PRs
 - PR #22, merge `3a2df67`, `grok/owner-allowlist` → `main`, merged 2026-10-04 CT by 313aidaroos: Owner allowlist: proven owner session skips seat gate and receipt cap. Undo: `git revert 3a2df67`.
+
+## 2026-10-04 (CT) — Claude-review audit by Deduxis Lead (Grok), asked by Awad via Developer Bot at 18:43 CT
+Changes since `5ccb9d2` (2026-10-02 17:31 CT) that had no note yet:
+- **Header fix (this PR):** the 18:24 catch-up commit `ab9c022` replaced this file's first line with a duplicated `## 2026-10-04 summary` heading. This PR puts the intro line back, removes the duplicate, and adds Claude's #24 to the summary. Undo: revert this PR.
+- **Claude PR #24** (`claude/great-fermi-6brq7a` → merge `79a55ef`, 2026-10-04 18:31 CT, signed "Claude Code"). Adds `NOTES/CLAUDE.md` (Deduxis slice of the 24-repo review) and one AI_CHANGELOG entry. Notes only, with no code, env, DB or deploy change of its own. The push to main auto-deployed prod as `dpl_HeB3tN5VaSxzuFMqpMKGFNTV2vSy` (READY). Undo: `git revert 79a55ef`. Branch `claude/great-fermi-6brq7a` is still on origin.
+- **Notes catch-up `ab9c022`** (2026-10-04 18:24 CT, 313aidaroos noreply identity; the agent is probably the Developer Bot hub catch-up job, unconfirmed). It changed NOTES/GROK.md only and auto-deployed prod `dpl_5HEb6oaQFMSZvN3ssa1sdb9bqohU`. Undo: `git revert ab9c022`.
+- **Vercel env `ANTHROPIC_API_KEY` updated** 2026-10-04 11:59 CT on project `deduxis` by the 313aidaroos account. The agent is unknown; the value was not inspected. Prod was then redeployed on the same commit `5ccb9d2` as `dpl_BcjoE58N2hhjif3CVgTkR7AKe81t` (12:01 CT) so the new key would load. Undo: restore the previous key value in Vercel and redeploy.
+- **Vercel env `ADMIN_EMAILS` added** 2026-10-04 18:13 CT (production + preview), as part of PR #22. It is already noted above.
+- **Previews only, not in prod:** `grok/feed-tab` (PR #23, open, DO NOT MERGE), with preview deploys at 18:16 and 18:40 CT.
+- Supabase `uxgtppwqonbznuoyebbb`: no new migrations since `receipts_foundation` (2026-10-02).
+
+Fixes in PR `deduxis/claude-review-fixes` (not merged; Awad reviews):
+- `components/ApixisWorldWelcome.tsx`: "200 in-world Ixis to start" → "1,000 Ixis to start" (lock: the 1,000 grant is made by Apixis.dev and never locally). Comments in `lib/apixis-world-agent.ts` and `app/api/apixis/world-agent/route.ts` were updated to match. The "200 receipts per seat period" quota was not touched.
+- `app/api/chat/route.ts` (Deduxis Cixy product role): removed the "Halal-conscious business expense guidance (riba/haram)" line and the "NOT a scholar … Islamic ruling" line (lock: no religious content outside Halaxis). The shared core `lib/apixis-cixy.ts` was left identical to ApixisWallet `sdk/apixis-cixy.ts`. That core still has the "Salam / As-salamu alaykum in kind", "Insha'Allah / alhamdulillah" and religious-ruling lines, which is for the hub/Awad to decide in ApixisWallet docs/CIXY.md.
+- `package.json`: added a `test` script (`node --test`, Node 22), so shared CI now runs the existing tests and the new `tests/locks.test.mjs`.
+- Who: Grok (Deduxis Lead). Undo: revert the PR's merge commit.
+

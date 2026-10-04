@@ -56,7 +56,7 @@ export function ApixisWorldWelcome() {
           ✦ {ready && view.agentName ? view.agentName : "Your agent"}
         </li>
         <li style={{ padding: "0.5rem 1rem", border: "1px solid #ccc", background: "#fff", borderRadius: "4px" }}>
-          200 in-world Ixis to start
+          1,000 Ixis to start
         </li>
         <li style={{ padding: "0.5rem 1rem", border: "1px solid #ccc", background: "#fff", borderRadius: "4px" }}>
           Sign in with Apixis ID
