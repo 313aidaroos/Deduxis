@@ -57,3 +57,7 @@ Entry format:
 ## 2026-10-04 — Claude (Claude Code, full-portfolio review)
 - Changed: `NOTES/CLAUDE.md` — this repo's slice of the 24-repo review (what is live, what is open, who owns each item, drift found). No code, env, database or deploy changes.
 - Why: Awad asked for every repo to be read twice with a done / to-do / owner status, and for the notes in each repo to be updated. Notes only; Awad approved the merge on 2026-10-04.
+
+## 2026-10-04 — Grok (Deduxis Lead, Claude-review fixes)
+- Changed: world welcome card now says 1,000 starter Ixis instead of 200, and the Deduxis Cixy role no longer has the halal/Islamic-ruling lines. Also added a `test` script plus `tests/locks.test.mjs`, and fixed the NOTES/GROK.md header.
+- Why: Awad's locks (1,000 Ixis grant made by Apixis.dev; no religious content outside Halaxis). Copy and prompt only: no restyle, no Wallet/env/DB change.
