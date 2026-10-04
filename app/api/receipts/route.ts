@@ -14,10 +14,12 @@ export async function POST(req: NextRequest) {
 
     // Seat includes 200 receipts per 30-day period.
     const periodStart = seatPeriodStart(access.seat?.renews_at ?? null);
-    const overCap = quotaResponse(
-      await receiptsUsed(supabase, user.id, periodStart),
-      periodStart,
-    );
+    const overCap = access.owner
+      ? null
+      : quotaResponse(
+          await receiptsUsed(supabase, user.id, periodStart),
+          periodStart,
+        );
     if (overCap) return overCap;
 
     const {

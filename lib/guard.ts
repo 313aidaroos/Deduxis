@@ -3,11 +3,12 @@ import { NextResponse } from "next/server";
 import type { User } from "@supabase/supabase-js";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { entitlements, type Entitlement } from "@/lib/apixis-wallet";
+import { isOwner } from "@/lib/owners";
 
 export const SEAT_PRODUCT = "deduxis.receipts.monthly";
 
 type Guarded =
-  | { ok: true; user: User; seat: Entitlement | null }
+  | { ok: true; user: User; seat: Entitlement | null; owner: boolean }
   | { ok: false; response: NextResponse };
 
 // Per-instance limiter for AI calls (serverless instances don't share memory: a speed bump,
@@ -55,8 +56,17 @@ export async function guard(opts: {
       ),
     };
   }
-  let seat: Entitlement | null = null;
+  // Owner bypass (lib/owners.ts): proven owner session skips the seat check (and, in the
+  // callers, the receipt cap). No entitlement is written and the Wallet is not charged.
+  let owner = false;
   if (opts.seat) {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    owner = isOwner(user, session?.access_token);
+  }
+  let seat: Entitlement | null = null;
+  if (opts.seat && !owner) {
     let owned: Entitlement[];
     try {
       owned = await entitlements(user.email, "deduxis");
@@ -98,5 +108,5 @@ export async function guard(opts: {
       ),
     };
   }
-  return { ok: true, user, seat };
+  return { ok: true, user, seat, owner };
 }
