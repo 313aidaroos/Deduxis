@@ -4,7 +4,7 @@ Grok Bot (Developer Bot hub + product leads) notes. Every change Grok Bot makes 
 
 - **Grok:** added the verified-owner seat/receipt bypass.
 - **Lead:** prepared the Socixis Social Feed preview; it was not merged.
-- **Claude:** merged PR #24 (`79a55ef`) around 6:30 PM CT, adding the full-portfolio review to `NOTES/CLAUDE.md` and `AI_CHANGELOG.md` (notes/docs only).
+- **Claude:** merged PR #24 (`79a55ef`) around 6:31 PM CT for the full-portfolio notes review; the later Claude-review PR #25 (`d7da814`) corrected 1,000-Ixis copy, removed religious Cixy-role lines, enabled tests, and repaired the notes header, with undo entries below.
 - **Hermes:** no 2026-10-04 commit or merged PR identified in this repository.
 - **Juno:** no 2026-10-04 commit or merged PR identified in this repository.
 
@@ -12,8 +12,8 @@ Grok Bot (Developer Bot hub + product leads) notes. Every change Grok Bot makes 
 
 Claude activity was present; the earlier “no Claude activity” line was incorrect. Each item below has an undo pointer.
 
+- **Claude-review/lead, 2026-10-04 6:55 PM CT — PR #25, merge `d7da814abcda2641cb6f2f7303e06f6b05836479`:** corrected 1,000-Ixis welcome copy, removed religious Cixy-role language, enabled the test script, and repaired the notes header; no Wallet/env/DB/Stripe change. Undo: `git revert d7da814abcda2641cb6f2f7303e06f6b05836479` (or close the preview PR if treated as not approved).
 - **Claude, 2026-10-04 6:31 PM CT — PR #24, merge `79a55ef95e75ff46d7eb5fb411b8a6991f1e9156`:** notes: Claude full-portfolio review 2026-10-04 (NOTES/CLAUDE.md, AI_CHANGELOG); added `NOTES/CLAUDE.md` and `AI_CHANGELOG.md` (notes/docs only). Undo: `git revert 79a55ef95e75ff46d7eb5fb411b8a6991f1e9156`.
-- **2026-10-04 6:31 PM CT — 313aidaroos:** `notes: Claude full-portfolio review 2026-10-04 (NOTES/CLAUDE.md, AI_CHANGELOG) (#24)` landed as `79a55ef95e75ff46d7eb5fb411b8a6991f1e9156`. Where: commit `79a55ef95e75ff46d7eb5fb411b8a6991f1e9156`. Undo: `git revert 79a55ef95e75ff46d7eb5fb411b8a6991f1e9156`.
 
 ## 2026-09-27 (CT) — Developer Bot (hub)
 - Wallet registration: added `deduxis` to `wallet_api_clients` in Supabase project `kzneeksminozmhnqaaun`, with `require_sso=false`.
