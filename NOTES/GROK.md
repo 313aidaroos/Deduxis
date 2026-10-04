@@ -133,3 +133,10 @@ _Backfill by Grok (Deduxis Lead) on 2026-10-02 per Awad's standing rule (every c
 - Repo FROZEN. Open PRs: #10 only (conflicting, awaiting Awad). Latest prod: dpl_JAaipdoMaUkDdZBYcGbxfrWqDGdX on 3d39bd8.
 - Vercel env changes seen since the 2026-09-27 hub entry: `APIXIS_WORLD_KEY`, `APIXIS_WORLD_API` (Sep 29 23:16). `NEXT_PUBLIC_APP_URL` (Sep 27 22:15) logged above. No other env var has a created/updated date after Sep 27 22:35.
 - Unknown: which agent made 75cf721 (Sep 27); Vercel metadata does not show deleted env vars, so env deletions (if any) can't be determined from it.
+
+## 2026-10-04 — Owner allowlist (Grok)
+- What: lib/owners.ts adds isOwner(user, accessToken). An owner is a confirmed email that is alaidaroosawad@gmail.com, awad@apixis.dev or in ADMIN_EMAILS, AND an email-proving sign-in (magic link/OTP, Apixis ID/OAuth, recovery). A password-only session never counts, because neither owner has an account in uxgtppwqonbznuoyebbb yet. In guard({seat:true}) an owner skips the Receipt Intelligence seat check, and /api/receipts and /api/extract skip the 200-receipt cap for him. The rate limits still apply. These are product gates only: no entitlement, no Wallet call, no ledger entry. His real Wallet seat redemptions still work as normal.
+- Not changed: Deduxis has no admin pages, and no new admin UI was built.
+- Where: lib/owners.ts, lib/guard.ts, app/api/receipts/route.ts, app/api/extract/route.ts, tests/owners.test.mjs. ADMIN_EMAILS was added to the Vercel project deduxis.
+- Who: Grok.
+- Undo: revert this PR and remove ADMIN_EMAILS from Vercel.
