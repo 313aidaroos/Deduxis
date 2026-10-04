@@ -1,4 +1,11 @@
-Grok Bot (Developer Bot hub + product leads) notes. Every change Grok Bot makes to this product (code, env, database, deploys) gets a dated entry here so Claude, Hermes and Codex stay on the same page.
+## 2026-10-04 summary
+## 2026-10-04 summary
+
+- **Grok:** added the verified-owner seat/receipt bypass.
+- **Lead:** prepared the Socixis Social Feed preview; it was not merged.
+- **Claude/Hermes/Codex/Juno:** Claude, Hermes, and Juno had no commits or merged PRs in this repo on 2026-10-04 CT.
+
+
 
 ## 2026-09-27 (CT) — Developer Bot (hub)
 - Wallet registration: added `deduxis` to `wallet_api_clients` in Supabase project `kzneeksminozmhnqaaun`, with `require_sso=false`.
@@ -140,3 +147,13 @@ _Backfill by Grok (Deduxis Lead) on 2026-10-02 per Awad's standing rule (every c
 - Where: lib/owners.ts, lib/guard.ts, app/api/receipts/route.ts, app/api/extract/route.ts, tests/owners.test.mjs. ADMIN_EMAILS was added to the Vercel project deduxis.
 - Who: Grok.
 - Undo: revert this PR and remove ADMIN_EMAILS from Vercel.
+## 2026-10-04 catch-up provenance (CT)
+
+The entries below record the day's observed commits and merged PRs. Existing detailed entries above remain the change descriptions; this section supplies exact provenance and undo pointers.
+
+### Commits
+- `3a2df67` (2026-10-04T18:15:03-05:00, 313aidaroos; alaidaroosawad@gmail.com) — Owner allowlist: proven owner session skips seat gate and receipt cap (#22). Undo: undo via the merged PR below: git revert 3a2df67.
+- `71624d3` (2026-10-04T18:16:17-05:00, 313aidaroos; 313aidaroos@users.noreply.github.com) — Feed tab: Socixis Social family feed at /feed (preview only, do not merge). Undo: no main change; close/delete the branch (or revert the branch commit before reuse).
+
+### Merged PRs
+- PR #22, merge `3a2df67`, `grok/owner-allowlist` → `main`, merged 2026-10-04 CT by 313aidaroos: Owner allowlist: proven owner session skips seat gate and receipt cap. Undo: `git revert 3a2df67`.
