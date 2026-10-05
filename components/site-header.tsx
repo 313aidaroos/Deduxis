@@ -21,6 +21,7 @@ export function SiteHeader() {
             Features
           </Link>
           <Link onClick={() => setOpen(false)} href="/companies">Apixis Companies</Link>
+          <Link onClick={() => setOpen(false)} href="/feed">Feed</Link>
           <Link onClick={() => setOpen(false)} href="/pricing">
             Pricing
           </Link>
