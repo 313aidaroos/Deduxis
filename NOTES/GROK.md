@@ -182,3 +182,10 @@ Fixes in PR `deduxis/claude-review-fixes` (not merged; Awad reviews):
 - `package.json`: added a `test` script (`node --test`, Node 22), so shared CI now runs the existing tests and the new `tests/locks.test.mjs`.
 - Who: Grok (Deduxis Lead). Undo: revert the PR's merge commit.
 
+
+## 2026-10-04 (CT) — Grok (Developer Bot hub): Cixy persona v2 sync + Ominix link
+- What: Follow-up to lead PR #25 (merged): lib/apixis-cixy.ts replaced the v1 Cixy kit (Muslim identity, Salam/Insha'Allah lines, halal 'clean recommendations') with v2. (the shared-core Salam/Insha'Allah lines #25 flagged). Ominix link on /companies now https://ominix-app.vercel.app (URL string only; no SVG/design change).
+- Files: app/companies/page.tsx lib/apixis-cixy.ts 
+- Why: Awad's lock — no religious content in Cixy on any product except Halaxis; she declines only genuinely harmful, deceptive or illegal content, never on religious grounds (9/30). Kit = ApixisWallet `sdk/apixis-cixy.*` v2 (3a22244, PR #50) with two hub edits pending canonical: the religion-derived "clean recommendations" rule (gambling) is replaced by "decline only harmful, deceptive or illegal, never on religious grounds", and the character line reads "draws on Arab culture". Ominix links point to https://ominix-app.vercel.app (checked 200 on 2026-10-04 ~6:55 PM CT).
+- Who: Grok (Developer Bot hub), branch `grok/cixy-v2-20261004`, one squash-merged PR.
+- Undo: `git revert <squash sha of this PR>` (sha recorded in the PR), then redeploy prod.
