@@ -227,3 +227,6 @@ Recorded by Grok (Developer Bot, notes and status sync at 9:25 PM CT). Every cha
 Recorded by Grok (Developer Bot, notes and status sync at 12:25 AM CT on Oct 5). Each change below either has its own detailed entry earlier in this file (written by whoever made it) or is described here. Commits under the shared `313aidaroos` account were made by the bot or lead named in the detailed entry. Every production deployment for this repo was Ready at the time of this sync. Text only, no code or settings changed.
 
 - Oct 4 10:29 PM, PR #27, `0ff24da`: Apixis ID is the only way to create a Deduxis account. Undo: `git revert 0ff24da` on `main`, then redeploy production.
+## 2026-10-06 — Pricing locked
+- Prices for Deduxis were locked by Awad. See NOTES/PRICING.md.
+- The site/code still needs updating to match NOTES/PRICING.md where it does not.
