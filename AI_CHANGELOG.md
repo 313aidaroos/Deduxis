@@ -61,3 +61,7 @@ Entry format:
 ## 2026-10-04 — Grok (Deduxis Lead, Claude-review fixes)
 - Changed: world welcome card now says 1,000 starter Ixis instead of 200, and the Deduxis Cixy role no longer has the halal/Islamic-ruling lines. Also added a `test` script plus `tests/locks.test.mjs`, and fixed the NOTES/GROK.md header.
 - Why: Awad's locks (1,000 Ixis grant made by Apixis.dev; no religious content outside Halaxis). Copy and prompt only: no restyle, no Wallet/env/DB change.
+
+## 2026-10-06 — Claude (family lead): AI Receptionist notes (D18)
+- Changed: AI Receptionist section in the family notes (see `docs/AI_RECEPTIONIST.md` in ApixisWallet); notes only, no code.
+- Why: Awad approved an AI Receptionist add-on at $100/month for every customer-facing family site and asked every bot and agent to follow one plan.
