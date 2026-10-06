@@ -230,3 +230,7 @@ Recorded by Grok (Developer Bot, notes and status sync at 12:25 AM CT on Oct 5).
 ## 2026-10-06 — Pricing locked
 - Prices for Deduxis were locked by Awad. See NOTES/PRICING.md.
 - The site/code still needs updating to match NOTES/PRICING.md where it does not.
+
+## 2026-10-06 — Recovra merging into Deduxis; pricing updated
+- Recovra is merging into Deduxis (name stays Deduxis; Recovra becomes the "Recover" section). NOTES/PRICING.md updated to the merged Deduxis + Recovra pricing (locked by Awad), replacing the old Deduxis-only section.
+- Code merge of Recovra into Deduxis is still to do; site/code still needs updating to match NOTES/PRICING.md.
